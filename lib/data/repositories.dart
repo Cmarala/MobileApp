@@ -40,7 +40,7 @@ class AppRepository {
   static const String tableVoters = 'voters';
   static const List<String> updatableVoterFields = [
     'favorability', 'is_dead', 'is_shifted', 'phone', 
-    'latitude', 'longitude', 'geo_address', 'last_visited_at',
+    'latitude', 'longitude', 'geo_address', 'last_visited_at', 'last_visited_by',
     'shifted_house_no', 'shifted_address',
     // Polling Live fields
     'serial_number', 'polled_at', 'polled_by_user_id', 'is_polled'

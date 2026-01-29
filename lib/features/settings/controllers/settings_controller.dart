@@ -7,14 +7,16 @@ class SettingsController extends StateNotifier<SettingsState> {
 
   // Keys for SharedPreferences
   static const _langKey = 'selected_language_code';
-  static const _headerEnabledKey = 'header_enabled';
-  static const _footerEnabledKey = 'footer_enabled';
+  static const _headerTextEnabledKey = 'headerTextEnabled';
+  static const _headerImageEnabledKey = 'headerImageEnabled';
+  static const _footerEnabledKey = 'footerEnabled';
 
   SettingsController(this._prefs)
       : super(SettingsState(
           langCode: _prefs.getString(_langKey) ?? 'en', // Default to English
-          headerEnabled: _prefs.getBool(_headerEnabledKey) ?? false,
-          footerEnabled: _prefs.getBool(_footerEnabledKey) ?? false,
+          headerTextEnabled: _prefs.getBool(_headerTextEnabledKey) ?? true,
+          headerImageEnabled: _prefs.getBool(_headerImageEnabledKey) ?? true,
+          footerEnabled: _prefs.getBool(_footerEnabledKey) ?? true,
         ));
 
   /// Update Language
@@ -23,13 +25,19 @@ class SettingsController extends StateNotifier<SettingsState> {
     state = state.copyWith(langCode: langCode);
   }
 
-  /// Toggle Header Message Visibility
-  Future<void> toggleHeader(bool enabled) async {
-    await _prefs.setBool(_headerEnabledKey, enabled);
-    state = state.copyWith(headerEnabled: enabled);
+  /// Toggle Header Text Visibility (Section 1)
+  Future<void> toggleHeaderText(bool enabled) async {
+    await _prefs.setBool(_headerTextEnabledKey, enabled);
+    state = state.copyWith(headerTextEnabled: enabled);
   }
 
-  /// Toggle Footer Message Visibility
+  /// Toggle Header Image Visibility
+  Future<void> toggleHeaderImage(bool enabled) async {
+    await _prefs.setBool(_headerImageEnabledKey, enabled);
+    state = state.copyWith(headerImageEnabled: enabled);
+  }
+
+  /// Toggle Footer Message Visibility (Section 3)
   Future<void> toggleFooter(bool enabled) async {
     await _prefs.setBool(_footerEnabledKey, enabled);
     state = state.copyWith(footerEnabled: enabled);
@@ -37,7 +45,8 @@ class SettingsController extends StateNotifier<SettingsState> {
 
   /// Reset settings to defaults if needed
   Future<void> clearSettings() async {
-    await _prefs.remove(_headerEnabledKey);
+    await _prefs.remove(_headerTextEnabledKey);
+    await _prefs.remove(_headerImageEnabledKey);
     await _prefs.remove(_footerEnabledKey);
     state = SettingsState(langCode: state.langCode);
   }

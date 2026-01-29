@@ -60,6 +60,62 @@ class AssetManager {
     }
   }
 
+  /// Phase 2 Optimization: Parallel batch downloads for faster first-time sync.
+  /// Downloads all active campaign assets in parallel with max concurrency.
+  /// Falls back gracefully if individual downloads fail.
+  static Future<void> cacheAllActiveAssetsParallel() async {
+    try {
+      final assets = await AppRepository.getActiveAssetMapping();
+      if (assets.isEmpty) return;
+      
+      // Download all assets in parallel
+      final futures = assets.map((asset) {
+        final url = asset['url'];
+        final type = asset['type'];
+        if (url != null && type != null) {
+          return _downloadAndCache(url, type);
+        }
+        return Future.value(null);
+      });
+      
+      // Wait for all downloads (max 30 seconds total)
+      await Future.wait(
+        futures,
+        eagerError: false, // Continue even if one fails
+      ).timeout(const Duration(seconds: 30));
+      
+      Logger.logInfo('AssetManager: Parallel batch caching completed.');
+    } catch (e, st) {
+      Logger.logError(e, st, 'AssetManager: Parallel batch caching failed.');
+    }
+  }
+
+  /// Incremental asset update for returning users.
+  /// Only downloads assets that aren't already cached locally.
+  static Future<void> updateCachedAssets() async {
+    try {
+      final assets = await AppRepository.getActiveAssetMapping();
+      final dir = await getApplicationDocumentsDirectory();
+      
+      for (final asset in assets) {
+        final url = asset['url'];
+        final type = asset['type'];
+        if (url == null || type == null) continue;
+        
+        final filename = '${type}_${url.hashCode}.img';
+        final file = File('${dir.path}/$filename');
+        
+        // Only download if not cached
+        if (!await file.exists()) {
+          await _downloadAndCache(url, type);
+        }
+      }
+      Logger.logInfo('AssetManager: Incremental cache update completed.');
+    } catch (e, st) {
+      Logger.logError(e, st, 'Failed to update cached assets');
+    }
+  }
+
   /// Logic: The technical "Workhorse" for file I/O and Networking.
   /// Uses a stable naming convention based on asset type and URL hash.
   static Future<String?> _downloadAndCache(String url, String assetType) async {

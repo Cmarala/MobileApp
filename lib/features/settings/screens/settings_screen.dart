@@ -20,7 +20,9 @@ class SettingsScreen extends ConsumerWidget {
         children: [
           _buildLanguageSection(context, ref, settings, l10n),
           const Divider(),
-          _buildHeaderToggle(context, ref, settings, l10n),
+          _buildHeaderTextToggle(context, ref, settings, l10n),
+          const Divider(),
+          _buildHeaderImageToggle(context, ref, settings, l10n),
           const Divider(),
           _buildFooterToggle(context, ref, settings, l10n),
         ],
@@ -72,7 +74,42 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeaderToggle(
+  Widget _buildHeaderTextToggle(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsState settings,
+    AppLocalizations? l10n,
+  ) {
+    return SwitchListTile(
+      secondary: const Icon(Icons.text_fields),
+      title: Text(l10n?.showHeaderText ?? 'Add Header Text'),
+      value: settings.headerTextEnabled,
+      onChanged: (enabled) async {
+        try {
+          await ref.read(settingsProvider.notifier).toggleHeaderText(enabled);
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(enabled ? 'Header text will be added to messages' : 'Header text removed from messages'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Widget _buildHeaderImageToggle(
     BuildContext context,
     WidgetRef ref,
     SettingsState settings,
@@ -80,15 +117,15 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     return SwitchListTile(
       secondary: const Icon(Icons.image),
-      title: Text(l10n?.showHeader ?? 'Show Header'),
-      value: settings.headerEnabled,
+      title: Text(l10n?.showHeader ?? 'Add Header Image'),
+      value: settings.headerImageEnabled,
       onChanged: (enabled) async {
         try {
-          await ref.read(settingsProvider.notifier).toggleHeader(enabled);
+          await ref.read(settingsProvider.notifier).toggleHeaderImage(enabled);
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(enabled ? 'Header will be added to messages' : 'Header removed from messages'),
+                content: Text(enabled ? 'Header image will be added to messages' : 'Header image removed from messages'),
                 backgroundColor: Colors.green,
               ),
             );

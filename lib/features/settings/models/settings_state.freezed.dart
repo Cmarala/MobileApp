@@ -23,8 +23,10 @@ SettingsState _$SettingsStateFromJson(Map<String, dynamic> json) {
 mixin _$SettingsState {
   String get langCode =>
       throw _privateConstructorUsedError; // 'en' or locale-specific code (default English)
-  bool get headerEnabled =>
-      throw _privateConstructorUsedError; // Show/hide header message
+  bool get headerTextEnabled =>
+      throw _privateConstructorUsedError; // Show/hide section1 text
+  bool get headerImageEnabled =>
+      throw _privateConstructorUsedError; // Show/hide message_section_1_image
   bool get footerEnabled => throw _privateConstructorUsedError;
 
   /// Serializes this SettingsState to a JSON map.
@@ -44,7 +46,12 @@ abstract class $SettingsStateCopyWith<$Res> {
     $Res Function(SettingsState) then,
   ) = _$SettingsStateCopyWithImpl<$Res, SettingsState>;
   @useResult
-  $Res call({String langCode, bool headerEnabled, bool footerEnabled});
+  $Res call({
+    String langCode,
+    bool headerTextEnabled,
+    bool headerImageEnabled,
+    bool footerEnabled,
+  });
 }
 
 /// @nodoc
@@ -63,7 +70,8 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
   @override
   $Res call({
     Object? langCode = null,
-    Object? headerEnabled = null,
+    Object? headerTextEnabled = null,
+    Object? headerImageEnabled = null,
     Object? footerEnabled = null,
   }) {
     return _then(
@@ -72,9 +80,13 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
                 ? _value.langCode
                 : langCode // ignore: cast_nullable_to_non_nullable
                       as String,
-            headerEnabled: null == headerEnabled
-                ? _value.headerEnabled
-                : headerEnabled // ignore: cast_nullable_to_non_nullable
+            headerTextEnabled: null == headerTextEnabled
+                ? _value.headerTextEnabled
+                : headerTextEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            headerImageEnabled: null == headerImageEnabled
+                ? _value.headerImageEnabled
+                : headerImageEnabled // ignore: cast_nullable_to_non_nullable
                       as bool,
             footerEnabled: null == footerEnabled
                 ? _value.footerEnabled
@@ -95,7 +107,12 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
   ) = __$$SettingsStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String langCode, bool headerEnabled, bool footerEnabled});
+  $Res call({
+    String langCode,
+    bool headerTextEnabled,
+    bool headerImageEnabled,
+    bool footerEnabled,
+  });
 }
 
 /// @nodoc
@@ -113,7 +130,8 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? langCode = null,
-    Object? headerEnabled = null,
+    Object? headerTextEnabled = null,
+    Object? headerImageEnabled = null,
     Object? footerEnabled = null,
   }) {
     return _then(
@@ -122,9 +140,13 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
             ? _value.langCode
             : langCode // ignore: cast_nullable_to_non_nullable
                   as String,
-        headerEnabled: null == headerEnabled
-            ? _value.headerEnabled
-            : headerEnabled // ignore: cast_nullable_to_non_nullable
+        headerTextEnabled: null == headerTextEnabled
+            ? _value.headerTextEnabled
+            : headerTextEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        headerImageEnabled: null == headerImageEnabled
+            ? _value.headerImageEnabled
+            : headerImageEnabled // ignore: cast_nullable_to_non_nullable
                   as bool,
         footerEnabled: null == footerEnabled
             ? _value.footerEnabled
@@ -140,8 +162,9 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
 class _$SettingsStateImpl implements _SettingsState {
   const _$SettingsStateImpl({
     this.langCode = 'en',
-    this.headerEnabled = false,
-    this.footerEnabled = false,
+    this.headerTextEnabled = true,
+    this.headerImageEnabled = true,
+    this.footerEnabled = true,
   });
 
   factory _$SettingsStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -153,15 +176,19 @@ class _$SettingsStateImpl implements _SettingsState {
   // 'en' or locale-specific code (default English)
   @override
   @JsonKey()
-  final bool headerEnabled;
-  // Show/hide header message
+  final bool headerTextEnabled;
+  // Show/hide section1 text
+  @override
+  @JsonKey()
+  final bool headerImageEnabled;
+  // Show/hide message_section_1_image
   @override
   @JsonKey()
   final bool footerEnabled;
 
   @override
   String toString() {
-    return 'SettingsState(langCode: $langCode, headerEnabled: $headerEnabled, footerEnabled: $footerEnabled)';
+    return 'SettingsState(langCode: $langCode, headerTextEnabled: $headerTextEnabled, headerImageEnabled: $headerImageEnabled, footerEnabled: $footerEnabled)';
   }
 
   @override
@@ -171,16 +198,23 @@ class _$SettingsStateImpl implements _SettingsState {
             other is _$SettingsStateImpl &&
             (identical(other.langCode, langCode) ||
                 other.langCode == langCode) &&
-            (identical(other.headerEnabled, headerEnabled) ||
-                other.headerEnabled == headerEnabled) &&
+            (identical(other.headerTextEnabled, headerTextEnabled) ||
+                other.headerTextEnabled == headerTextEnabled) &&
+            (identical(other.headerImageEnabled, headerImageEnabled) ||
+                other.headerImageEnabled == headerImageEnabled) &&
             (identical(other.footerEnabled, footerEnabled) ||
                 other.footerEnabled == footerEnabled));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, langCode, headerEnabled, footerEnabled);
+  int get hashCode => Object.hash(
+    runtimeType,
+    langCode,
+    headerTextEnabled,
+    headerImageEnabled,
+    footerEnabled,
+  );
 
   /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
@@ -199,7 +233,8 @@ class _$SettingsStateImpl implements _SettingsState {
 abstract class _SettingsState implements SettingsState {
   const factory _SettingsState({
     final String langCode,
-    final bool headerEnabled,
+    final bool headerTextEnabled,
+    final bool headerImageEnabled,
     final bool footerEnabled,
   }) = _$SettingsStateImpl;
 
@@ -209,7 +244,9 @@ abstract class _SettingsState implements SettingsState {
   @override
   String get langCode; // 'en' or locale-specific code (default English)
   @override
-  bool get headerEnabled; // Show/hide header message
+  bool get headerTextEnabled; // Show/hide section1 text
+  @override
+  bool get headerImageEnabled; // Show/hide message_section_1_image
   @override
   bool get footerEnabled;
 

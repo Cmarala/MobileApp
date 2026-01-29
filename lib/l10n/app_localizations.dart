@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Polling Live'**
   String get pollingLive;
 
+  /// No description provided for @dashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard'**
+  String get dashboard;
+
   /// No description provided for @sync.
   ///
   /// In en, this message translates to:
@@ -392,10 +398,16 @@ abstract class AppLocalizations {
   /// **'Footer Settings'**
   String get footerSettings;
 
+  /// No description provided for @showHeaderText.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Header Text'**
+  String get showHeaderText;
+
   /// No description provided for @showHeader.
   ///
   /// In en, this message translates to:
-  /// **'Add Header in Message'**
+  /// **'Add Header Image'**
   String get showHeader;
 
   /// No description provided for @showFooter.

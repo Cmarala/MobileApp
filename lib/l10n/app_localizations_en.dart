@@ -21,6 +21,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pollingLive => 'Polling Live';
 
   @override
+  String get dashboard => 'Dashboard';
+
+  @override
   String get sync => 'Sync';
 
   @override
@@ -156,7 +159,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerSettings => 'Footer Settings';
 
   @override
-  String get showHeader => 'Add Header in Message';
+  String get showHeaderText => 'Add Header Text';
+
+  @override
+  String get showHeader => 'Add Header Image';
 
   @override
   String get showFooter => 'Add Footer in Message';

@@ -21,6 +21,9 @@ class AppLocalizationsTe extends AppLocalizations {
   String get pollingLive => 'పోలింగ్ లైవ్';
 
   @override
+  String get dashboard => 'డ్యాష్‌బోర్డ్';
+
+  @override
   String get sync => 'సింక్';
 
   @override
@@ -156,7 +159,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get footerSettings => 'ఫుటర్ సెట్టింగ్స్';
 
   @override
-  String get showHeader => 'సందేశంలో హెడర్ జోడించండి';
+  String get showHeaderText => 'హెడర్ టెక్స్ట్ జోడించండి';
+
+  @override
+  String get showHeader => 'హెడర్ చిత్రం జోడించండి';
 
   @override
   String get showFooter => 'సందేశంలో ఫుటర్ జోడించండి';

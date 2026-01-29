@@ -3,31 +3,19 @@ import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/utils/logger.dart';
-import 'package:mobileapp/models/app_user.dart'; // New Import
+import 'package:mobileapp/models/app_user.dart';
+import 'package:mobileapp/utils/device_id_service.dart';
 
 class AuthService {
-  static const _deviceIdKey = 'device_id';
-
-  static Future<String> _getDeviceId() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? deviceId = prefs.getString(_deviceIdKey);
-    if (deviceId == null) {
-      deviceId = const Uuid().v4();
-      await prefs.setString(_deviceIdKey, deviceId);
-    }
-    return deviceId;
-  }
-
   static Future<AppUser> activateApp(String name, String phone, String passcode) async {
     const maxRetries = 3;
     const baseDelay = Duration(seconds: 2);
 
     for (var attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        final deviceId = await _getDeviceId();
+        final deviceId = await DeviceIdService.getDeviceId();
 
         final response = await http.post(
           Uri.parse('$supabaseUrl/functions/v1/smart-handler'),

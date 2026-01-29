@@ -9,13 +9,15 @@ part of 'settings_state.dart';
 _$SettingsStateImpl _$$SettingsStateImplFromJson(Map<String, dynamic> json) =>
     _$SettingsStateImpl(
       langCode: json['langCode'] as String? ?? 'en',
-      headerEnabled: json['headerEnabled'] as bool? ?? false,
-      footerEnabled: json['footerEnabled'] as bool? ?? false,
+      headerTextEnabled: json['headerTextEnabled'] as bool? ?? true,
+      headerImageEnabled: json['headerImageEnabled'] as bool? ?? true,
+      footerEnabled: json['footerEnabled'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$$SettingsStateImplToJson(_$SettingsStateImpl instance) =>
     <String, dynamic>{
       'langCode': instance.langCode,
-      'headerEnabled': instance.headerEnabled,
+      'headerTextEnabled': instance.headerTextEnabled,
+      'headerImageEnabled': instance.headerImageEnabled,
       'footerEnabled': instance.footerEnabled,
     };

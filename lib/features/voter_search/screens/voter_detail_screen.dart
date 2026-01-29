@@ -227,7 +227,14 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    // Ensure localization is loaded
+    if (l10n == null) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     
     if (_controller.loading) {
       return Scaffold(
@@ -584,26 +591,35 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
               l10n.status,
               style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
-            SwitchListTile(
-              title: Text(l10n.isDead, style: const TextStyle(fontSize: 13)),
-              value: voter.isDead,
-              onChanged: (value) => _controller.updateVoterStatus(isDead: value),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-            SwitchListTile(
-              title: Text(l10n.isShifted, style: const TextStyle(fontSize: 13)),
-              value: voter.isShifted,
-              onChanged: (value) => _controller.updateVoterStatus(isShifted: value),
-              dense: true,
-              contentPadding: EdgeInsets.zero,
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Expanded(
+                  child: SwitchListTile(
+                    title: Text(l10n.isDead, style: const TextStyle(fontSize: 13)),
+                    value: voter.isDead,
+                    onChanged: (value) => _controller.updateVoterStatus(isDead: value),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                Expanded(
+                  child: SwitchListTile(
+                    title: Text(l10n.isShifted, style: const TextStyle(fontSize: 13)),
+                    value: voter.isShifted,
+                    onChanged: (value) => _controller.updateVoterStatus(isShifted: value),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
             ),
             
             // Shifted Address Fields (conditional)
             if (voter.isShifted) ...[
               const SizedBox(height: 12),
               Text(
-                '${l10n.isShifted} ${l10n.address}',
+                '${l10n.shiftedAddress}',
                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),

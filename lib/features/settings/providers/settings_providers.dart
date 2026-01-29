@@ -19,9 +19,14 @@ final isEnglishProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider).langCode == 'en';
 });
 
-// Helper provider for header visibility
-final headerEnabledProvider = Provider<bool>((ref) {
-  return ref.watch(settingsProvider).headerEnabled;
+// Helper provider for header text visibility
+final headerTextEnabledProvider = Provider<bool>((ref) {
+  return ref.watch(settingsProvider).headerTextEnabled;
+});
+
+// Helper provider for header image visibility
+final headerImageEnabledProvider = Provider<bool>((ref) {
+  return ref.watch(settingsProvider).headerImageEnabled;
 });
 
 // Helper provider for footer visibility

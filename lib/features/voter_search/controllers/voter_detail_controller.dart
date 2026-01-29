@@ -148,9 +148,12 @@ class VoterDetailController extends ChangeNotifier {
     if (_voter == null) return '';
 
     try {
-      // Get campaign ID from shared preferences
+      // Get campaign ID and settings from shared preferences
       final prefs = await SharedPreferences.getInstance();
       final campaignId = prefs.getString('campaign_id');
+      final headerTextEnabled = prefs.getBool('headerTextEnabled') ?? true;
+      final headerImageEnabled = prefs.getBool('headerImageEnabled') ?? true;
+      final footerEnabled = prefs.getBool('footerEnabled') ?? true;
       
       if (campaignId == null) {
         return _buildMessageWithoutCampaign(langCode);
@@ -163,24 +166,31 @@ class VoterDetailController extends ChangeNotifier {
         return _buildMessageWithoutCampaign(langCode);
       }
 
-      // Fetch image URL
-      final imageUrl = await AppRepository.getCampaignImageUrl(campaignId, 'message_section_1_image');
+      // Fetch image URL only if header image is enabled
+      String? imageUrl;
+      if (headerImageEnabled) {
+        imageUrl = await AppRepository.getCampaignImageUrl(campaignId, 'message_section_1_image');
+      }
 
       // Build message with three sections
-      final section1 = langCode == 'en' 
+      final section1 = headerTextEnabled && langCode == 'en' 
           ? (campaign['section1_text'] ?? '')
-          : (campaign['section1_text_local'] ?? campaign['section1_text'] ?? '');
+          : headerTextEnabled
+            ? (campaign['section1_text_local'] ?? campaign['section1_text'] ?? '')
+            : '';
       
-      final section3 = langCode == 'en'
+      final section3 = footerEnabled && langCode == 'en'
           ? (campaign['section3_text'] ?? '')
-          : (campaign['section3_text_local'] ?? campaign['section3_text'] ?? '');
+          : footerEnabled
+            ? (campaign['section3_text_local'] ?? campaign['section3_text'] ?? '')
+            : '';
 
       final section2 = _buildVoterDetailsSection(langCode);
 
       final message = StringBuffer();
       
-      // Add image URL at the top if available
-      if (imageUrl != null && imageUrl.isNotEmpty) {
+      // Add image URL at the top if available and header image is enabled
+      if (headerImageEnabled && imageUrl != null && imageUrl.isNotEmpty) {
         message.writeln(imageUrl);
         message.writeln();
       }
@@ -242,6 +252,10 @@ Booth: $boothName''';
         await fetchLocation();
       }
 
+      // Get current user ID for last_visited_by
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id');
+
       final updatedVoter = _voter!.copyWith(
         phone: mobileController.text.trim(),
         shiftedHouseNo: shiftedHouseNoController.text.trim().isEmpty 
@@ -252,6 +266,8 @@ Booth: $boothName''';
             : shiftedAddressController.text.trim(),
         latitude: _currentPosition?.latitude,
         longitude: _currentPosition?.longitude,
+        lastVisitedAt: DateTime.now().toIso8601String(),
+        lastVisitedBy: userId,
       );
 
       await AppRepository.saveVoter(updatedVoter);
@@ -284,13 +300,15 @@ Booth: $boothName''';
     }
     
     try {
-      // Get campaign ID and fetch image URL
+      // Get campaign ID and settings
       final prefs = await SharedPreferences.getInstance();
       final campaignId = prefs.getString('campaign_id');
+      final headerImageEnabled = prefs.getBool('headerImageEnabled') ?? true;
       
       String? imagePath;
       
-      if (campaignId != null) {
+      // Only download image if headerImageEnabled is true
+      if (campaignId != null && headerImageEnabled) {
         final imageUrl = await AppRepository.getCampaignImageUrl(campaignId, 'message_section_1_image');
         
         if (imageUrl != null && imageUrl.isNotEmpty) {
@@ -352,6 +370,8 @@ Booth: $boothName''';
     try {
       final prefs = await SharedPreferences.getInstance();
       final campaignId = prefs.getString('campaign_id');
+      final headerTextEnabled = prefs.getBool('headerTextEnabled') ?? true;
+      final footerEnabled = prefs.getBool('footerEnabled') ?? true;
       
       if (campaignId == null) {
         return _buildMessageWithoutCampaign(langCode);
@@ -363,13 +383,17 @@ Booth: $boothName''';
         return _buildMessageWithoutCampaign(langCode);
       }
 
-      final section1 = langCode == 'en' 
+      final section1 = headerTextEnabled && langCode == 'en' 
           ? (campaign['section1_text'] ?? '')
-          : (campaign['section1_text_local'] ?? campaign['section1_text'] ?? '');
+          : headerTextEnabled
+            ? (campaign['section1_text_local'] ?? campaign['section1_text'] ?? '')
+            : '';
       
-      final section3 = langCode == 'en'
+      final section3 = footerEnabled && langCode == 'en'
           ? (campaign['section3_text'] ?? '')
-          : (campaign['section3_text_local'] ?? campaign['section3_text'] ?? '');
+          : footerEnabled
+            ? (campaign['section3_text_local'] ?? campaign['section3_text'] ?? '')
+            : '';
 
       final section2 = _buildVoterDetailsSection(langCode);
 

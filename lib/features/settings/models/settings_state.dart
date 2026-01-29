@@ -7,8 +7,9 @@ part 'settings_state.g.dart';
 class SettingsState with _$SettingsState {
   const factory SettingsState({
     @Default('en') String langCode, // 'en' or locale-specific code (default English)
-    @Default(false) bool headerEnabled, // Show/hide header message
-    @Default(false) bool footerEnabled, // Show/hide footer message
+    @Default(true) bool headerTextEnabled, // Show/hide section1 text
+    @Default(true) bool headerImageEnabled, // Show/hide message_section_1_image
+    @Default(true) bool footerEnabled, // Show/hide section3 text
   }) = _SettingsState;
 
   factory SettingsState.fromJson(Map<String, dynamic> json) => _$SettingsStateFromJson(json);

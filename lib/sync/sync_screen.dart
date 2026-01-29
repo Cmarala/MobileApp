@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:mobileapp/volunteer/home_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
 import 'package:mobileapp/sync/powersync_backend_connector.dart';
+import 'package:mobileapp/sync/sync_state_manager.dart';
 import 'package:mobileapp/utils/asset_manager.dart';
 import 'package:mobileapp/utils/logger.dart';
 
@@ -25,53 +26,84 @@ class _SyncScreenState extends State<SyncScreen> {
     _startSetup();
   }
 
- Future<void> _startSetup() async {
-  try {
-    setState(() => _error = null);
-
-    // 1. Initialize & Connect
-    await PowerSyncService().initialize();
-    final db = PowerSyncService().db;
-    db.statusStream.listen(_onSyncStatusChange);
-    await db.connect(connector: MyPowerSyncBackendConnector());
-
-    // 2. STAGE 1: Branding (Poll for Splash)
-    setState(() => _syncStatus = "Setting up branding...");
-    int splashRetries = 0;
-    while (_splashPath == null && splashRetries < 5) {
-      final path = await AssetManager.getAssetPath('splash_screen_image');
-      if (path != null) {
-        if (mounted) setState(() => _splashPath = path);
-        break;
+  Future<void> _startSetup() async {
+    try {
+      setState(() => _error = null);
+      
+      // Initialize DB
+      await PowerSyncService().initialize();
+      final db = PowerSyncService().db;
+      
+      // Check if this is first-time or incremental sync
+      final isFirstSync = !await SyncStateManager.hasCompletedInitialSync();
+      
+      // SPLASH SCREEN FIX: Check cache first (works for returning users)
+      final cachedSplash = await AssetManager.getAssetPath('splash_screen_image');
+      if (cachedSplash != null && mounted) {
+        setState(() => _splashPath = cachedSplash);
       }
-      await Future.delayed(const Duration(milliseconds: 800));
-      splashRetries++;
+      
+      if (isFirstSync) {
+        // FULL SYNC FLOW - First-time users
+        db.statusStream.listen(_onSyncStatusChange);
+        await db.connect(connector: MyPowerSyncBackendConnector());
+        
+        setState(() => _syncStatus = "Optimizing offline files...");
+        await AssetManager.cacheAllActiveAssetsParallel();
+        
+        setState(() {
+          _isSyncingVoters = true;
+          _syncStatus = "Syncing voter records...";
+        });
+        
+        await db.waitForFirstSync();
+        
+        // Download splash for next launch (after campaign_assets synced)
+        if (_splashPath == null) {
+          setState(() => _syncStatus = "Finalizing setup...");
+          await _downloadAssetWithTimeout('splash_screen_image', 3000);
+        }
+        
+        // Mark as completed
+        await SyncStateManager.markInitialSyncComplete();
+        
+      } else {
+        // INCREMENTAL SYNC FLOW - Fast path for returning users
+        setState(() => _syncStatus = "Checking for updates...");
+        
+        // Connect and let background sync run
+        await db.connect(connector: MyPowerSyncBackendConnector());
+        
+        // Download only new/changed assets
+        await AssetManager.updateCachedAssets();
+        
+        // Don't wait - background sync handles incremental updates
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+      
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e, st) {
+      Logger.logError('Sync sequence failed', st);
+      if (mounted) setState(() => _error = "Sync failed. Check connection.");
     }
-
-    // 3. STAGE 2: Optimize Offline Files
-    setState(() => _syncStatus = "Optimizing offline files...");
-    await AssetManager.cacheAllActiveAssets();
-
-    // 4. STAGE 3: Massive Voter Sync (Generic Status)
-    setState(() {
-      _isSyncingVoters = true;
-      _syncStatus = "Syncing voter records...";
-    });
-
-    // This is the functional gate for the 1 Lakh records
-    await db.waitForFirstSync();
-
-    // 5. FINISH
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    }
-  } catch (e, st) {
-    Logger.logError('Sync sequence failed', st);
-    if (mounted) setState(() => _error = "Sync failed. Check connection.");
   }
-}
+
+  /// Helper method for splash download with timeout
+  Future<void> _downloadAssetWithTimeout(String type, int milliseconds) async {
+    try {
+      final path = await AssetManager.getAssetPath(type)
+          .timeout(Duration(milliseconds: milliseconds));
+      if (path != null && mounted) {
+        setState(() => _splashPath = path);
+      }
+    } catch (e) {
+      Logger.logInfo('Splash download timeout - will retry next launch');
+    }
+  }
 
   void _onSyncStatusChange(dynamic status) {
     if (!mounted) return;

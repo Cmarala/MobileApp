@@ -8,7 +8,7 @@ import 'package:mobileapp/features/voter_search/screens/voter_console_screen.dar
 import 'package:mobileapp/features/survey/screens/survey_list_screen.dart';
 import 'package:mobileapp/features/polling/screens/polling_dashboard_screen.dart' as polling;
 import 'package:mobileapp/features/reports/screens/reports_entry_screen.dart';
-import 'package:mobileapp/sync/sync_screen.dart';
+import 'package:mobileapp/features/dashboard/screens/dashboard_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
 import 'package:mobileapp/widgets/app_bottom_nav.dart';
 import 'package:mobileapp/features/settings/screens/settings_screen.dart';
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
         {'icon': Icons.search, 'label': 'Voter Search', 'route': 'voter_search'},
         {'icon': Icons.poll, 'label': 'Survey', 'route': 'survey'},
         {'icon': Icons.how_to_reg, 'label': 'Polling Live', 'route': 'polling_live'},
-        {'icon': Icons.sync, 'label': 'Sync', 'route': 'sync'},
+        {'icon': Icons.dashboard, 'label': 'Dashboard', 'route': 'dashboard'},
         {'icon': Icons.bar_chart, 'label': 'Reports', 'route': 'reports'},
         {'icon': Icons.settings, 'label': 'Settings', 'route': 'settings'},
       ];
@@ -41,10 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
       {'icon': Icons.search, 'label': l10n.voterSearch, 'route': 'voter_search'},
       {'icon': Icons.poll, 'label': l10n.survey, 'route': 'survey'},
       {'icon': Icons.how_to_reg, 'label': l10n.pollingLive, 'route': 'polling_live'},
-      {'icon': Icons.sync, 'label': l10n.sync, 'route': 'sync'},
+      {'icon': Icons.dashboard, 'label': l10n.dashboard, 'route': 'dashboard'},
       {'icon': Icons.bar_chart, 'label': l10n.reports, 'route': 'reports'},
       {'icon': Icons.settings, 'label': l10n.settings, 'route': 'settings'},
-      //{'icon': Icons.people, 'label': 'Volunteers', 'route': null},
     ];
   }
   int _selectedIndex = 0;
@@ -282,16 +281,16 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
       }
-    } else if (route == 'sync') {
+    } else if (route == 'dashboard') {
       try {
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const SyncScreen()),
+          MaterialPageRoute(builder: (context) => const DashboardScreen()),
         );
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error opening Sync: ${e.toString()}'),
+              content: Text('Error opening Dashboard: ${e.toString()}'),
               backgroundColor: Colors.red,
               duration: const Duration(seconds: 4),
             ),
