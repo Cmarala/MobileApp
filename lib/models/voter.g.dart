@@ -40,6 +40,8 @@ _$VoterImpl _$$VoterImplFromJson(Map<String, dynamic> json) => _$VoterImpl(
   isShifted: json['is_shifted'] == null
       ? false
       : _boolFromInt(json['is_shifted']),
+  shiftedHouseNo: json['shifted_house_no'] as String?,
+  shiftedAddress: json['shifted_address'] as String?,
   favorability: json['favorability'] == null
       ? VoterFavorability.neutral
       : _favorabilityFromJson(json['favorability']),
@@ -97,6 +99,8 @@ Map<String, dynamic> _$$VoterImplToJson(_$VoterImpl instance) =>
       'is_dead': _boolToInt(instance.isDead),
       'is_rented': _boolToInt(instance.isRented),
       'is_shifted': _boolToInt(instance.isShifted),
+      'shifted_house_no': instance.shiftedHouseNo,
+      'shifted_address': instance.shiftedAddress,
       'favorability': _favorabilityToJson(instance.favorability),
       'last_visited_at': instance.lastVisitedAt,
       'last_visited_by': instance.lastVisitedBy,

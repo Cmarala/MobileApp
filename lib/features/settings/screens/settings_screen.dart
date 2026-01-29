@@ -88,7 +88,7 @@ class SettingsScreen extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(enabled ? 'Header enabled' : 'Header disabled'),
+                content: Text(enabled ? 'Header will be added to messages' : 'Header removed from messages'),
                 backgroundColor: Colors.green,
               ),
             );
@@ -123,7 +123,7 @@ class SettingsScreen extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(enabled ? 'Footer enabled' : 'Footer disabled'),
+                content: Text(enabled ? 'Footer will be added to messages' : 'Footer removed from messages'),
                 backgroundColor: Colors.green,
               ),
             );

@@ -169,7 +169,7 @@ class VoterReportController {
         await Share.shareXFiles(
           [XFile(filePath)],
           subject: 'Voter Report',
-          text: 'Voter Analytics Report - ${rows.length} voters',
+          text: 'Voter Insights Report - ${rows.length} voters',
         );
 
         Logger.logInfo('Excel export successful: ${rows.length} voters');

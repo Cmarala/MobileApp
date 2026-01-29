@@ -395,13 +395,13 @@ abstract class AppLocalizations {
   /// No description provided for @showHeader.
   ///
   /// In en, this message translates to:
-  /// **'Show Header'**
+  /// **'Add Header in Message'**
   String get showHeader;
 
   /// No description provided for @showFooter.
   ///
   /// In en, this message translates to:
-  /// **'Show Footer'**
+  /// **'Add Footer in Message'**
   String get showFooter;
 
   /// No description provided for @selectHeaderImage.
@@ -589,6 +589,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Footer saved successfully'**
   String get footerSaved;
+
+  /// No description provided for @voterInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Voter Information'**
+  String get voterInformation;
+
+  /// No description provided for @boothName.
+  ///
+  /// In en, this message translates to:
+  /// **'Booth Name'**
+  String get boothName;
+
+  /// No description provided for @partSerial.
+  ///
+  /// In en, this message translates to:
+  /// **'Part/Serial'**
+  String get partSerial;
+
+  /// No description provided for @houseNo.
+  ///
+  /// In en, this message translates to:
+  /// **'House No'**
+  String get houseNo;
+
+  /// No description provided for @relationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Relation Name'**
+  String get relationName;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @shiftedHouseNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifted House No'**
+  String get shiftedHouseNo;
+
+  /// No description provided for @shiftedAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifted Address'**
+  String get shiftedAddress;
+
+  /// No description provided for @locationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Information'**
+  String get locationInfo;
+
+  /// No description provided for @getLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Location'**
+  String get getLocation;
+
+  /// No description provided for @showDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Directions'**
+  String get showDirections;
+
+  /// No description provided for @latitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get latitude;
+
+  /// No description provided for @longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get longitude;
+
+  /// No description provided for @sectionVoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Section Voters'**
+  String get sectionVoters;
+
+  /// No description provided for @boothVoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Booth Voters'**
+  String get boothVoters;
+
+  /// No description provided for @part.
+  ///
+  /// In en, this message translates to:
+  /// **'Part'**
+  String get part;
+
+  /// No description provided for @srno.
+  ///
+  /// In en, this message translates to:
+  /// **'Sr.No'**
+  String get srno;
 }
 
 class _AppLocalizationsDelegate

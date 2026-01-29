@@ -41,6 +41,7 @@ class AppRepository {
   static const List<String> updatableVoterFields = [
     'favorability', 'is_dead', 'is_shifted', 'phone', 
     'latitude', 'longitude', 'geo_address', 'last_visited_at',
+    'shifted_house_no', 'shifted_address',
     // Polling Live fields
     'serial_number', 'polled_at', 'polled_by_user_id', 'is_polled'
   ];
@@ -193,6 +194,24 @@ class AppRepository {
   }
 
  
+
+  // --- Campaign Queries ---
+
+  static Future<Map<String, dynamic>?> getCampaign(String campaignId) async {
+    final result = await db.getOptional(
+      'SELECT section1_text, section1_text_local, section3_text, section3_text_local FROM campaigns WHERE id = ?',
+      [campaignId],
+    );
+    return result;
+  }
+
+  static Future<String?> getCampaignImageUrl(String campaignId, String assetType) async {
+    final result = await db.getOptional(
+      'SELECT file_url FROM campaign_assets WHERE campaign_id = ? AND asset_type = ?',
+      [campaignId, assetType],
+    );
+    return result?['file_url'] as String?;
+  }
 
   // --- Filter Persistence (Clean JSON approach) ---
 

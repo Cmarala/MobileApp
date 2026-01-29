@@ -5,6 +5,8 @@ import 'package:mobileapp/features/voter_search/screens/voter_console_screen.dar
 import 'package:mobileapp/models/enums.dart';
 import 'package:mobileapp/utils/bilingual_helper.dart';
 import 'package:mobileapp/features/settings/providers/settings_providers.dart';
+import 'package:mobileapp/widgets/app_bottom_nav.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 class VoterDetailScreen extends ConsumerStatefulWidget {
   final String voterId;
@@ -17,6 +19,7 @@ class VoterDetailScreen extends ConsumerStatefulWidget {
 
 class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
   late VoterDetailController _controller;
+  int _currentNavIndex = 0;
 
   @override
   void initState() {
@@ -70,7 +73,8 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
 
   Future<void> _sendSMS() async {
     try {
-      await _controller.sendSMS();
+      final langCode = ref.read(settingsProvider).langCode;
+      await _controller.sendSMS(langCode);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -94,7 +98,8 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
 
   Future<void> _sendWhatsApp() async {
     try {
-      await _controller.sendWhatsApp();
+      final langCode = ref.read(settingsProvider).langCode;
+      await _controller.sendWhatsApp(langCode);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -118,7 +123,8 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
 
   Future<void> _printVoterSlip() async {
     try {
-      final slip = _controller.getPrintableSlip();
+      final langCode = ref.read(settingsProvider).langCode;
+      final slip = await _controller.getPrintableSlip(langCode);
       debugPrint('THERMAL PRINT OUTPUT:');
       debugPrint(slip);
 
@@ -221,131 +227,273 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     if (_controller.loading) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_controller.voter == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Voter Detail')),
-        body: const Center(child: Text('Voter not found')),
+        appBar: AppBar(title: Text(l10n.voterDetails)),
+        body: Center(child: Text(l10n.noData)),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Voter Detail'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.phone),
-            tooltip: 'Call',
-            onPressed: _dialPhone,
+        title: Text(l10n.voterDetails),
+      ),
+      body: Column(
+        children: [
+          // Fixed action buttons bar at the top
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Row 1: Save and Cancel
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _controller.saving ? null : _saveVoter,
+                        icon: _controller.saving 
+                            ? SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : Icon(Icons.save, size: 20),
+                        label: Text(
+                          l10n.save,
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(Icons.close, size: 20),
+                        label: Text(
+                          l10n.cancel,
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.grey[700],
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          side: BorderSide(color: Colors.grey[400]!, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                // Row 2: Other Actions
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildActionButton(
+                      icon: Icons.message,
+                      label: l10n.sms,
+                      onPressed: _sendSMS,
+                    ),
+                    _buildActionButton(
+                      icon: Icons.chat_bubble_rounded,
+                      label: l10n.whatsapp,
+                      onPressed: _sendWhatsApp,
+                    ),
+                    _buildActionButton(
+                      icon: Icons.print,
+                      label: l10n.print,
+                      onPressed: _printVoterSlip,
+                    ),
+                    _buildActionButton(
+                      icon: Icons.phone,
+                      label: l10n.call,
+                      onPressed: _dialPhone,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.message),
-            tooltip: 'SMS',
-            onPressed: _sendSMS,
-          ),
-          IconButton(
-            icon: const Icon(Icons.chat_bubble_rounded),
-            tooltip: 'WhatsApp',
-            onPressed: _sendWhatsApp,
-          ),
-          IconButton(
-            icon: const Icon(Icons.print),
-            tooltip: 'Print',
-            onPressed: _printVoterSlip,
+          // Scrollable content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCompactInfoCard(l10n),
+                  const SizedBox(height: 8),
+                  _buildEditableSection(l10n),
+                  const SizedBox(height: 8),
+                  // Section and Booth Voters buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _navigateToSection,
+                          icon: const Icon(Icons.group, size: 18),
+                          label: Text(l10n.sectionVoters),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _navigateToBooth,
+                          icon: const Icon(Icons.location_on, size: 18),
+                          label: Text(l10n.boothVoters),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 80), // Space for bottom nav
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoCard(),
-            const SizedBox(height: 16),
-            _buildStatusToggles(),
-            const SizedBox(height: 16),
-            _buildFavorabilitySelector(),
-            const SizedBox(height: 16),
-            _buildMobileField(),
-            const SizedBox(height: 16),
-            _buildLocationInfo(),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _controller.saving ? null : _saveVoter,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                ),
-                child: _controller.saving
-                    ? const CircularProgressIndicator()
-                    : const Text('Save', style: TextStyle(fontSize: 18)),
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            TextButton.icon(
-              onPressed: _navigateToSection,
-              icon: const Icon(Icons.group),
-              label: const Text('Section Voters'),
-            ),
-            TextButton.icon(
-              onPressed: _navigateToBooth,
-              icon: const Icon(Icons.location_on),
-              label: const Text('Booth Voters'),
-            ),
-          ],
-        ),
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: _currentNavIndex,
+        onTap: (index) {
+          setState(() => _currentNavIndex = index);
+          // TODO: Handle navigation based on index
+        },
       ),
     );
   }
 
-  Widget _buildInfoCard() {
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    Color? color,
+  }) {
+    return InkWell(
+      onTap: onPressed,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: onPressed == null 
+                ? Colors.grey 
+                : (color ?? Colors.black87),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: onPressed == null 
+                  ? Colors.grey 
+                  : (color ?? Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactInfoCard(AppLocalizations l10n) {
     final voter = _controller.voter!;
     final langCode = ref.watch(settingsProvider).langCode;
     return Card(
-      elevation: 4,
-      color: Colors.blueGrey[50],
+      elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              BilingualHelper.getVoterName(voter.name, voter.nameLocal, langCode).isEmpty
+              l10n.voterInformation,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            // Part/Serial Number (First)
+            _buildInfoRow(
+              icon: Icons.list_alt_outlined,
+              label: '${l10n.part}/${l10n.srno}',
+              value: '${voter.partNo ?? 'N/A'}/${voter.serialNumber ?? 'N/A'}',
+              isBold: true,
+            ),
+            const SizedBox(height: 4),
+            // EPIC ID (Second)
+            _buildInfoRow(
+              icon: Icons.badge,
+              label: l10n.epicId,
+              value: voter.epicId ?? 'N/A',
+              fontFamily: 'monospace',
+            ),
+            const SizedBox(height: 4),
+            // Voter Name (Third)
+            _buildInfoRow(
+              icon: Icons.person,
+              label: l10n.name,
+              value: BilingualHelper.getVoterName(voter.name, voter.nameLocal, langCode).isEmpty
                 ? 'Unknown'
                 : BilingualHelper.getVoterName(voter.name, voter.nameLocal, langCode),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              isBold: true,
             ),
             const SizedBox(height: 4),
-            Text(
-              voter.relationName != null
-                  ? "${voter.relation ?? ''} ${BilingualHelper.getRelationName(voter.relationName, voter.relationNameLocal, langCode)}"
-                  : "Relative Name N/A",
-              style: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
-            ),
-            const Divider(),
-            Text(
-              'EPIC: ${voter.epicId ?? 'N/A'}',
-              style: const TextStyle(fontFamily: 'monospace'),
+            // Relation Name (Fourth)
+            _buildInfoRow(
+              icon: Icons.person_outline,
+              label: l10n.relationName,
+              value: voter.relationName != null
+                  ? "${BilingualHelper.getRelationName(voter.relationName, voter.relationNameLocal, langCode)}${voter.relation != null && voter.relation!.isNotEmpty ? ' (${voter.relation})' : ''}"
+                  : 'N/A',
             ),
             const SizedBox(height: 4),
-            Text(
-              'House No: ${voter.houseNo ?? 'N/A'}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // Age (Fifth)
+            _buildInfoRow(
+              icon: Icons.cake,
+              label: l10n.age,
+              value: '${voter.age ?? '?'}',
             ),
-            Text(
-              'Age: ${voter.age ?? '?'} | Gender: ${voter.gender?.label ?? '?'}',
+            const SizedBox(height: 4),
+            // Booth Number/Address (Sixth)
+            _buildInfoRow(
+              icon: Icons.location_on,
+              label: l10n.booth,
+              value: _controller.boothName ?? voter.sectionName ?? 'N/A',
             ),
           ],
         ),
@@ -353,47 +501,55 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
     );
   }
 
-  Widget _buildStatusToggles() {
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    bool isBold = false,
+    String? fontFamily,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 14, color: Colors.grey[700]),
+        const SizedBox(width: 6),
+        Text(
+          '$label: ',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey[800],
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontFamily: fontFamily,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEditableSection(AppLocalizations l10n) {
     final voter = _controller.voter!;
     return Card(
+      elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Status',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Favorability
+            Text(
+              l10n.favorability,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            SwitchListTile(
-              title: const Text('Dead'),
-              value: voter.isDead,
-              onChanged: (value) => _controller.updateVoterStatus(isDead: value),
-            ),
-            SwitchListTile(
-              title: const Text('Shifted'),
-              value: voter.isShifted,
-              onChanged: (value) => _controller.updateVoterStatus(isShifted: value),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFavorabilitySelector() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Favorability',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -401,7 +557,258 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
                 children: VoterFavorability.values.map((fav) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: _buildFavorabilityCircle(fav, size: 44, iconSize: 20, fontSize: 12),
+                    child: _buildFavorabilityCircle(fav, size: 50, iconSize: 24, fontSize: 10),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            
+            // Mobile Field
+            TextField(
+              controller: _controller.mobileController,
+              decoration: InputDecoration(
+                labelText: l10n.mobileNumber,
+                prefixIcon: const Icon(Icons.phone, size: 20),
+                isDense: true,
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              ),
+              keyboardType: TextInputType.phone,
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            
+            // Status Toggles
+            Text(
+              l10n.status,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            SwitchListTile(
+              title: Text(l10n.isDead, style: const TextStyle(fontSize: 13)),
+              value: voter.isDead,
+              onChanged: (value) => _controller.updateVoterStatus(isDead: value),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            SwitchListTile(
+              title: Text(l10n.isShifted, style: const TextStyle(fontSize: 13)),
+              value: voter.isShifted,
+              onChanged: (value) => _controller.updateVoterStatus(isShifted: value),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            
+            // Shifted Address Fields (conditional)
+            if (voter.isShifted) ...[
+              const SizedBox(height: 12),
+              Text(
+                '${l10n.isShifted} ${l10n.address}',
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              TextField(
+                controller: _controller.shiftedHouseNoController,
+                decoration: InputDecoration(
+                  labelText: l10n.shiftedHouseNo,
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                ),
+                style: const TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _controller.shiftedAddressController,
+                decoration: InputDecoration(
+                  labelText: l10n.shiftedAddress,
+                  isDense: true,
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                ),
+                maxLines: 2,
+                style: const TextStyle(fontSize: 13),
+              ),
+            ],
+            const SizedBox(height: 12),
+            
+            // Location Section
+            Text(
+              l10n.locationInfo,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            if (_controller.currentPosition != null) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${l10n.latitude}: ${_controller.currentPosition!.latitude.toStringAsFixed(6)}',
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '${l10n.longitude}: ${_controller.currentPosition!.longitude.toStringAsFixed(6)}',
+                      style: const TextStyle(fontSize: 11),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ] else
+              Text(
+                'No location captured',
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            const SizedBox(height: 8),
+            // Always show address box
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      _controller.voter!.geoAddress ?? 'Address will appear here after getting location',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: _controller.voter!.geoAddress != null ? Colors.black : Colors.grey[600],
+                        fontStyle: _controller.voter!.geoAddress != null ? FontStyle.normal : FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      try {
+                        await _controller.fetchLocation();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Location captured successfully'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error getting location: ${e.toString()}'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    icon: const Icon(Icons.my_location, size: 18),
+                    label: Text(l10n.getLocation),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: (_controller.currentPosition != null || 
+                                (_controller.voter!.latitude != null && _controller.voter!.longitude != null))
+                        ? () async {
+                            try {
+                              await _controller.openDirections();
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(e.toString()),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                        : null,
+                    icon: const Icon(Icons.directions, size: 18),
+                    label: Text(l10n.showDirections),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusToggles(AppLocalizations l10n) {
+    final voter = _controller.voter!;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.status,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            ),
+            SwitchListTile(
+              title: Text(l10n.isDead, style: const TextStyle(fontSize: 13)),
+              value: voter.isDead,
+              onChanged: (value) => _controller.updateVoterStatus(isDead: value),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+            SwitchListTile(
+              title: Text(l10n.isShifted, style: const TextStyle(fontSize: 13)),
+              value: voter.isShifted,
+              onChanged: (value) => _controller.updateVoterStatus(isShifted: value),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFavorabilitySelector(AppLocalizations l10n) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.favorability,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: VoterFavorability.values.map((fav) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: _buildFavorabilityCircle(fav, size: 50, iconSize: 24, fontSize: 10),
                   );
                 }).toList(),
               ),
@@ -412,7 +819,7 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
     );
   }
 
-  Widget _buildFavorabilityCircle(VoterFavorability favorability, {double size = 44, double iconSize = 20, double fontSize = 12}) {
+  Widget _buildFavorabilityCircle(VoterFavorability favorability, {double size = 50, double iconSize = 24, double fontSize = 10}) {
     final isSelected = _controller.voter!.favorability == favorability;
     return InkWell(
       onTap: () => _controller.updateFavorability(favorability),
@@ -433,51 +840,93 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
                 ? Icon(Icons.check, color: Colors.white, size: iconSize)
                 : null,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(favorability.label, style: TextStyle(fontSize: fontSize)),
         ],
       ),
     );
   }
 
-  Widget _buildMobileField() {
+  Widget _buildMobileField(AppLocalizations l10n) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: TextField(
           controller: _controller.mobileController,
-          decoration: const InputDecoration(
-            labelText: 'Mobile Number',
-            prefixIcon: Icon(Icons.phone),
+          decoration: InputDecoration(
+            labelText: l10n.mobileNumber,
+            prefixIcon: const Icon(Icons.phone, size: 20),
+            isDense: true,
+            border: InputBorder.none,
           ),
           keyboardType: TextInputType.phone,
+          style: const TextStyle(fontSize: 14),
         ),
       ),
     );
   }
 
-  Widget _buildLocationInfo() {
+  Widget _buildLocationInfo(AppLocalizations l10n) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'GPS Location',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.locationInfo,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             if (_controller.currentPosition != null)
               Text(
-                'Lat: ${_controller.currentPosition!.latitude.toStringAsFixed(6)}, '
-                'Lng: ${_controller.currentPosition!.longitude.toStringAsFixed(6)}',
+                '${l10n.latitude}: ${_controller.currentPosition!.latitude.toStringAsFixed(6)}\n'
+                '${l10n.longitude}: ${_controller.currentPosition!.longitude.toStringAsFixed(6)}',
+                style: const TextStyle(fontSize: 12),
               )
             else
-              const Text(
-                'Fetching location...',
-                style: TextStyle(color: Colors.grey),
+              Text(
+                l10n.loading,
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShiftedAddressFields(AppLocalizations l10n) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${l10n.isShifted} ${l10n.address}',
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            TextField(
+              controller: _controller.shiftedHouseNoController,
+              decoration: InputDecoration(
+                labelText: l10n.shiftedHouseNo,
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _controller.shiftedAddressController,
+              decoration: InputDecoration(
+                labelText: l10n.shiftedAddress,
+                isDense: true,
+                border: const OutlineInputBorder(),
+              ),
+              maxLines: 2,
+              style: const TextStyle(fontSize: 13),
+            ),
           ],
         ),
       ),

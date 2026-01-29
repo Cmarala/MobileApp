@@ -156,10 +156,10 @@ class AppLocalizationsTe extends AppLocalizations {
   String get footerSettings => 'ఫుటర్ సెట్టింగ్స్';
 
   @override
-  String get showHeader => 'హెడర్ చూపించు';
+  String get showHeader => 'సందేశంలో హెడర్ జోడించండి';
 
   @override
-  String get showFooter => 'ఫుటర్ చూపించు';
+  String get showFooter => 'సందేశంలో ఫుటర్ జోడించండి';
 
   @override
   String get selectHeaderImage => 'హెడర్ చిత్రం ఎంచుకోండి';
@@ -256,4 +256,55 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get footerSaved => 'ఫుటర్ విజయవంతంగా సేవ్ చేయబడింది';
+
+  @override
+  String get voterInformation => 'ఓటరు సమాచారం';
+
+  @override
+  String get boothName => 'బూత్ పేరు';
+
+  @override
+  String get partSerial => 'భాగం/క్రమ సంఖ్య';
+
+  @override
+  String get houseNo => 'ఇంటి నంబర్';
+
+  @override
+  String get relationName => 'సంబంధం పేరు';
+
+  @override
+  String get status => 'స్థితి';
+
+  @override
+  String get shiftedHouseNo => 'మార్చిన ఇంటి నంబర్';
+
+  @override
+  String get shiftedAddress => 'మార్చిన చిరునామా';
+
+  @override
+  String get locationInfo => 'స్థాన సమాచారం';
+
+  @override
+  String get getLocation => 'స్థానం పొందండి';
+
+  @override
+  String get showDirections => 'దిశలు చూపించు';
+
+  @override
+  String get latitude => 'అక్షాంశం';
+
+  @override
+  String get longitude => 'రేఖాంశం';
+
+  @override
+  String get sectionVoters => 'విభాగం ఓటర్లు';
+
+  @override
+  String get boothVoters => 'బూత్ ఓటర్లు';
+
+  @override
+  String get part => 'భాగం';
+
+  @override
+  String get srno => 'క్ర.సం';
 }

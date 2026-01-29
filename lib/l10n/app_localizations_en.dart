@@ -156,10 +156,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerSettings => 'Footer Settings';
 
   @override
-  String get showHeader => 'Show Header';
+  String get showHeader => 'Add Header in Message';
 
   @override
-  String get showFooter => 'Show Footer';
+  String get showFooter => 'Add Footer in Message';
 
   @override
   String get selectHeaderImage => 'Select Header Image';
@@ -255,4 +255,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get footerSaved => 'Footer saved successfully';
+
+  @override
+  String get voterInformation => 'Voter Information';
+
+  @override
+  String get boothName => 'Booth Name';
+
+  @override
+  String get partSerial => 'Part/Serial';
+
+  @override
+  String get houseNo => 'House No';
+
+  @override
+  String get relationName => 'Relation Name';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get shiftedHouseNo => 'Shifted House No';
+
+  @override
+  String get shiftedAddress => 'Shifted Address';
+
+  @override
+  String get locationInfo => 'Location Information';
+
+  @override
+  String get getLocation => 'Get Location';
+
+  @override
+  String get showDirections => 'Show Directions';
+
+  @override
+  String get latitude => 'Latitude';
+
+  @override
+  String get longitude => 'Longitude';
+
+  @override
+  String get sectionVoters => 'Section Voters';
+
+  @override
+  String get boothVoters => 'Booth Voters';
+
+  @override
+  String get part => 'Part';
+
+  @override
+  String get srno => 'Sr.No';
 }

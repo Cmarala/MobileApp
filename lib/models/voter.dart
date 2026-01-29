@@ -56,6 +56,9 @@ class Voter with _$Voter {
     @Default(false)
     bool isShifted,
     
+    @JsonKey(name: 'shifted_house_no') String? shiftedHouseNo,
+    @JsonKey(name: 'shifted_address') String? shiftedAddress,
+    
     @JsonKey(
       fromJson: _favorabilityFromJson,
       toJson: _favorabilityToJson,

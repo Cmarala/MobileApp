@@ -77,6 +77,10 @@ mixin _$Voter {
   bool get isRented => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
   bool get isShifted => throw _privateConstructorUsedError;
+  @JsonKey(name: 'shifted_house_no')
+  String? get shiftedHouseNo => throw _privateConstructorUsedError;
+  @JsonKey(name: 'shifted_address')
+  String? get shiftedAddress => throw _privateConstructorUsedError;
   @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
   VoterFavorability get favorability => throw _privateConstructorUsedError;
   @JsonKey(name: 'last_visited_at')
@@ -162,6 +166,8 @@ abstract class $VoterCopyWith<$Res> {
     bool isRented,
     @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
     bool isShifted,
+    @JsonKey(name: 'shifted_house_no') String? shiftedHouseNo,
+    @JsonKey(name: 'shifted_address') String? shiftedAddress,
     @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
     VoterFavorability favorability,
     @JsonKey(name: 'last_visited_at') String? lastVisitedAt,
@@ -234,6 +240,8 @@ class _$VoterCopyWithImpl<$Res, $Val extends Voter>
     Object? isDead = null,
     Object? isRented = null,
     Object? isShifted = null,
+    Object? shiftedHouseNo = freezed,
+    Object? shiftedAddress = freezed,
     Object? favorability = null,
     Object? lastVisitedAt = freezed,
     Object? lastVisitedBy = freezed,
@@ -379,6 +387,14 @@ class _$VoterCopyWithImpl<$Res, $Val extends Voter>
                 ? _value.isShifted
                 : isShifted // ignore: cast_nullable_to_non_nullable
                       as bool,
+            shiftedHouseNo: freezed == shiftedHouseNo
+                ? _value.shiftedHouseNo
+                : shiftedHouseNo // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            shiftedAddress: freezed == shiftedAddress
+                ? _value.shiftedAddress
+                : shiftedAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
             favorability: null == favorability
                 ? _value.favorability
                 : favorability // ignore: cast_nullable_to_non_nullable
@@ -500,6 +516,8 @@ abstract class _$$VoterImplCopyWith<$Res> implements $VoterCopyWith<$Res> {
     bool isRented,
     @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
     bool isShifted,
+    @JsonKey(name: 'shifted_house_no') String? shiftedHouseNo,
+    @JsonKey(name: 'shifted_address') String? shiftedAddress,
     @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
     VoterFavorability favorability,
     @JsonKey(name: 'last_visited_at') String? lastVisitedAt,
@@ -571,6 +589,8 @@ class __$$VoterImplCopyWithImpl<$Res>
     Object? isDead = null,
     Object? isRented = null,
     Object? isShifted = null,
+    Object? shiftedHouseNo = freezed,
+    Object? shiftedAddress = freezed,
     Object? favorability = null,
     Object? lastVisitedAt = freezed,
     Object? lastVisitedBy = freezed,
@@ -716,6 +736,14 @@ class __$$VoterImplCopyWithImpl<$Res>
             ? _value.isShifted
             : isShifted // ignore: cast_nullable_to_non_nullable
                   as bool,
+        shiftedHouseNo: freezed == shiftedHouseNo
+            ? _value.shiftedHouseNo
+            : shiftedHouseNo // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        shiftedAddress: freezed == shiftedAddress
+            ? _value.shiftedAddress
+            : shiftedAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
         favorability: null == favorability
             ? _value.favorability
             : favorability // ignore: cast_nullable_to_non_nullable
@@ -831,6 +859,8 @@ class _$VoterImpl extends _Voter {
     this.isRented = false,
     @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
     this.isShifted = false,
+    @JsonKey(name: 'shifted_house_no') this.shiftedHouseNo,
+    @JsonKey(name: 'shifted_address') this.shiftedAddress,
     @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
     this.favorability = VoterFavorability.neutral,
     @JsonKey(name: 'last_visited_at') this.lastVisitedAt,
@@ -947,6 +977,12 @@ class _$VoterImpl extends _Voter {
   @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
   final bool isShifted;
   @override
+  @JsonKey(name: 'shifted_house_no')
+  final String? shiftedHouseNo;
+  @override
+  @JsonKey(name: 'shifted_address')
+  final String? shiftedAddress;
+  @override
   @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
   final VoterFavorability favorability;
   @override
@@ -1003,7 +1039,7 @@ class _$VoterImpl extends _Voter {
 
   @override
   String toString() {
-    return 'Voter(id: $id, campaignId: $campaignId, geoUnitId: $geoUnitId, epicId: $epicId, vid: $vid, vid2: $vid2, sectionNumber: $sectionNumber, sectionName: $sectionName, partNo: $partNo, name: $name, nameLocal: $nameLocal, age: $age, gender: $gender, birthDate: $birthDate, phone: $phone, email: $email, houseNo: $houseNo, address: $address, addressLocal: $addressLocal, sectionNameLocal: $sectionNameLocal, relationNameLocal: $relationNameLocal, religionId: $religionId, casteId: $casteId, subCasteId: $subCasteId, educationId: $educationId, occupationId: $occupationId, relationName: $relationName, relation: $relation, isDead: $isDead, isRented: $isRented, isShifted: $isShifted, favorability: $favorability, lastVisitedAt: $lastVisitedAt, lastVisitedBy: $lastVisitedBy, isDeleted: $isDeleted, createdAt: $createdAt, updatedAt: $updatedAt, metadata: $metadata, createdByUserId: $createdByUserId, updatedByUserId: $updatedByUserId, geoUnitPath: $geoUnitPath, ancestors: $ancestors, latitude: $latitude, longitude: $longitude, geoAddress: $geoAddress, isPolled: $isPolled, serialNumber: $serialNumber, polledAt: $polledAt, polledByUserId: $polledByUserId)';
+    return 'Voter(id: $id, campaignId: $campaignId, geoUnitId: $geoUnitId, epicId: $epicId, vid: $vid, vid2: $vid2, sectionNumber: $sectionNumber, sectionName: $sectionName, partNo: $partNo, name: $name, nameLocal: $nameLocal, age: $age, gender: $gender, birthDate: $birthDate, phone: $phone, email: $email, houseNo: $houseNo, address: $address, addressLocal: $addressLocal, sectionNameLocal: $sectionNameLocal, relationNameLocal: $relationNameLocal, religionId: $religionId, casteId: $casteId, subCasteId: $subCasteId, educationId: $educationId, occupationId: $occupationId, relationName: $relationName, relation: $relation, isDead: $isDead, isRented: $isRented, isShifted: $isShifted, shiftedHouseNo: $shiftedHouseNo, shiftedAddress: $shiftedAddress, favorability: $favorability, lastVisitedAt: $lastVisitedAt, lastVisitedBy: $lastVisitedBy, isDeleted: $isDeleted, createdAt: $createdAt, updatedAt: $updatedAt, metadata: $metadata, createdByUserId: $createdByUserId, updatedByUserId: $updatedByUserId, geoUnitPath: $geoUnitPath, ancestors: $ancestors, latitude: $latitude, longitude: $longitude, geoAddress: $geoAddress, isPolled: $isPolled, serialNumber: $serialNumber, polledAt: $polledAt, polledByUserId: $polledByUserId)';
   }
 
   @override
@@ -1059,6 +1095,10 @@ class _$VoterImpl extends _Voter {
                 other.isRented == isRented) &&
             (identical(other.isShifted, isShifted) ||
                 other.isShifted == isShifted) &&
+            (identical(other.shiftedHouseNo, shiftedHouseNo) ||
+                other.shiftedHouseNo == shiftedHouseNo) &&
+            (identical(other.shiftedAddress, shiftedAddress) ||
+                other.shiftedAddress == shiftedAddress) &&
             (identical(other.favorability, favorability) ||
                 other.favorability == favorability) &&
             (identical(other.lastVisitedAt, lastVisitedAt) ||
@@ -1132,6 +1172,8 @@ class _$VoterImpl extends _Voter {
     isDead,
     isRented,
     isShifted,
+    shiftedHouseNo,
+    shiftedAddress,
     favorability,
     lastVisitedAt,
     lastVisitedBy,
@@ -1203,6 +1245,8 @@ abstract class _Voter extends Voter {
     final bool isRented,
     @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
     final bool isShifted,
+    @JsonKey(name: 'shifted_house_no') final String? shiftedHouseNo,
+    @JsonKey(name: 'shifted_address') final String? shiftedAddress,
     @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
     final VoterFavorability favorability,
     @JsonKey(name: 'last_visited_at') final String? lastVisitedAt,
@@ -1316,6 +1360,12 @@ abstract class _Voter extends Voter {
   @override
   @JsonKey(name: 'is_shifted', fromJson: _boolFromInt, toJson: _boolToInt)
   bool get isShifted;
+  @override
+  @JsonKey(name: 'shifted_house_no')
+  String? get shiftedHouseNo;
+  @override
+  @JsonKey(name: 'shifted_address')
+  String? get shiftedAddress;
   @override
   @JsonKey(fromJson: _favorabilityFromJson, toJson: _favorabilityToJson)
   VoterFavorability get favorability;

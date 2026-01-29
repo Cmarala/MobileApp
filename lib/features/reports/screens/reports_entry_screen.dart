@@ -20,7 +20,7 @@ class ReportsEntryScreen extends StatelessWidget {
           children: [
             _ReportCard(
               icon: Icons.people_alt_rounded,
-              title: 'Voter Analytics',
+              title: 'Voter Insights',
               description: 'Detailed voter demographics, coverage & sentiment analysis',
               gradient: const LinearGradient(
                 colors: [Color(0xFF2196F3), Color(0xFF1976D2)],
