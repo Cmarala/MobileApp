@@ -8,7 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobileapp/auth/activate_screen.dart';
 import 'package:mobileapp/config/env.dart';
 import 'package:mobileapp/utils/logger.dart';
-import 'package:mobileapp/volunteer/home_screen.dart';
 import 'package:mobileapp/auth/app_launch_service.dart';
 import 'package:mobileapp/sync/sync_screen.dart';
 

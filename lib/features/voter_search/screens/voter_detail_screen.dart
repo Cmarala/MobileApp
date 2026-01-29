@@ -154,7 +154,7 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => VoterConsoleScreen(initialFilters: filters),
+            builder: (context) => const VoterConsoleScreen(),
           ),
         );
       } else {
@@ -184,7 +184,7 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => VoterConsoleScreen(initialFilters: filters),
+            builder: (context) => const VoterConsoleScreen(),
           ),
         );
       } else {

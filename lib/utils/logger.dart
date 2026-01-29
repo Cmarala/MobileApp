@@ -2,11 +2,15 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 class Logger {
+  // Performance optimization: disable verbose logs in release mode
+  static const bool _enableVerboseLogs = kDebugMode;
   static final _errorStreamController = StreamController<String>.broadcast();
   static Stream<String> get errorStream => _errorStreamController.stream;
 
   static void logInfo(String message) {
-    debugPrint('[INFO] $message');
+    if (_enableVerboseLogs) {
+      debugPrint('[INFO] $message');
+    }
   }
 
   static void logError(Object error, [StackTrace? stackTrace, String? uiMessage]) {

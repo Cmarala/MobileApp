@@ -10,11 +10,11 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.settings),
+        title: Text(l10n?.settings ?? 'Settings'),
       ),
       body: ListView(
         children: [
@@ -32,11 +32,11 @@ class SettingsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     SettingsState settings,
-    AppLocalizations l10n,
+    AppLocalizations? l10n,
   ) {
     return ListTile(
       leading: const Icon(Icons.language),
-      title: Text(l10n.language),
+      title: Text(l10n?.language ?? 'Language'),
       subtitle: Text(settings.langCode == 'en' ? 'English' : 'తెలుగు'),
       trailing: DropdownButton<String>(
         value: settings.langCode,
@@ -51,7 +51,7 @@ class SettingsScreen extends ConsumerWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text(l10n.languageChanged),
+                    content: Text(l10n?.languageChanged ?? 'Language changed'),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -60,7 +60,7 @@ class SettingsScreen extends ConsumerWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${l10n.error}: ${e.toString()}'),
+                    content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -76,11 +76,11 @@ class SettingsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     SettingsState settings,
-    AppLocalizations l10n,
+    AppLocalizations? l10n,
   ) {
     return SwitchListTile(
       secondary: const Icon(Icons.image),
-      title: Text(l10n.showHeader),
+      title: Text(l10n?.showHeader ?? 'Show Header'),
       value: settings.headerEnabled,
       onChanged: (enabled) async {
         try {
@@ -97,7 +97,7 @@ class SettingsScreen extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${l10n.error}: ${e.toString()}'),
+                content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
                 backgroundColor: Colors.red,
               ),
             );
@@ -111,11 +111,11 @@ class SettingsScreen extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
     SettingsState settings,
-    AppLocalizations l10n,
+    AppLocalizations? l10n,
   ) {
     return SwitchListTile(
       secondary: const Icon(Icons.short_text),
-      title: Text(l10n.showFooter),
+      title: Text(l10n?.showFooter ?? 'Show Footer'),
       value: settings.footerEnabled,
       onChanged: (enabled) async {
         try {
@@ -132,7 +132,7 @@ class SettingsScreen extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('${l10n.error}: ${e.toString()}'),
+                content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
                 backgroundColor: Colors.red,
               ),
             );

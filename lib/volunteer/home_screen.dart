@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobileapp/data/repositories.dart';
 import 'package:mobileapp/utils/asset_manager.dart';
+import 'package:mobileapp/utils/logger.dart';
 import 'package:mobileapp/features/voter_search/screens/voter_console_screen.dart';
 import 'package:mobileapp/features/survey/screens/survey_list_screen.dart';
 import 'package:mobileapp/features/polling/screens/polling_dashboard_screen.dart' as polling;
@@ -22,7 +23,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Map<String, dynamic>> _localizedFeatures(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    // Fallback to English labels if localization is not available
+    if (l10n == null) {
+      return [
+        {'icon': Icons.search, 'label': 'Voter Search', 'route': 'voter_search'},
+        {'icon': Icons.poll, 'label': 'Survey', 'route': 'survey'},
+        {'icon': Icons.how_to_reg, 'label': 'Polling Live', 'route': 'polling_live'},
+        {'icon': Icons.sync, 'label': 'Sync', 'route': 'sync'},
+        {'icon': Icons.bar_chart, 'label': 'Reports', 'route': 'reports'},
+        {'icon': Icons.settings, 'label': 'Settings', 'route': 'settings'},
+      ];
+    }
+    
     return [
       {'icon': Icons.search, 'label': l10n.voterSearch, 'route': 'voter_search'},
       {'icon': Icons.poll, 'label': l10n.survey, 'route': 'survey'},
@@ -57,8 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
             flex: 6,
             child: FutureBuilder<String?>(
               // Logic is now purely "Get me the file path"
-              future: AssetManager.getAssetPath('home_screen_image'),
+              // TODO: Change back to 'home_screen_image' once it's added to campaign_assets table
+              future: AssetManager.getAssetPath('splash_screen_image'),
               builder: (context, snapshot) {
+                Logger.logInfo('🖼️  [HOME SCREEN] Image FutureBuilder state: ${snapshot.connectionState}');
+                if (snapshot.hasData) {
+                  Logger.logInfo('🖼️  [HOME SCREEN] Image path received: ${snapshot.data}');
+                } else if (snapshot.hasError) {
+                  Logger.logError(snapshot.error ?? 'Unknown error', snapshot.stackTrace, 'Image loading error');
+                }
                 return _buildBannerImage(snapshot.data);
               },
             ),
@@ -96,21 +117,28 @@ class _HomeScreenState extends State<HomeScreen> {
   /// UI Logic: Handles how to display the file once AssetManager finds it
   Widget _buildBannerImage(String? path) {
     if (path == null) {
+      Logger.logInfo('🖼️  [DISPLAY] No path provided, showing placeholder');
       return _buildImagePlaceholder();
     }
 
+    Logger.logInfo('🖼️  [DISPLAY] Checking if file exists: $path');
     final file = File(path);
     if (!file.existsSync()) {
+      Logger.logInfo('❌ [DISPLAY] File does not exist at path: $path');
       return _buildImagePlaceholder();
     }
 
+    Logger.logInfo('✅ [DISPLAY] File exists, attempting to display image');
     return SizedBox(
       width: double.infinity,
       child: Image.file(
         file,
         fit: BoxFit.cover,
         // If file is corrupted, show placeholder
-        errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+        errorBuilder: (context, error, stackTrace) {
+          Logger.logError(error, stackTrace, 'Image display error');
+          return _buildImagePlaceholder();
+        },
       ),
     );
   }

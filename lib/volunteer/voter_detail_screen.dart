@@ -178,9 +178,7 @@ Favorability: ${_voter!.favorability.label}
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => VoterConsoleScreen(
-            initialFilters: {'section_number': _voter!.sectionNumber},
-          ),
+          builder: (context) => const VoterConsoleScreen(),
         ),
       );
     } else {
@@ -196,9 +194,7 @@ Favorability: ${_voter!.favorability.label}
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => VoterConsoleScreen(
-            initialFilters: {'geo_unit_id': _voter!.geoUnitId},
-          ),
+          builder: (context) => const VoterConsoleScreen(),
         ),
       );
     } else {

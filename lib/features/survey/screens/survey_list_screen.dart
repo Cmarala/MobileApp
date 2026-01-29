@@ -81,7 +81,6 @@ class _SurveyListScreenState extends ConsumerState<SurveyListScreen> {
         color = Colors.orange;
         break;
       case SurveyMode.standardForm:
-      default:
         icon = Icons.assignment;
         color = Colors.blue;
     }

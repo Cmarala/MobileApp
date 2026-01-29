@@ -63,9 +63,29 @@ class AppRepository {
 
     // Handle filters
     filters?.forEach((key, value) {
-      if (value == null) return;
+      if (value == null || (value is String && value.isEmpty)) return;
       
       switch (key) {
+        case 'epic_id':
+          conditions.add('epic_id LIKE ?');
+          params.add('%$value%');
+          break;
+          
+        case 'door_no':
+          conditions.add('door_no LIKE ?');
+          params.add('%$value%');
+          break;
+          
+        case 'booth_no':
+          conditions.add('section_number LIKE ?');
+          params.add('%$value%');
+          break;
+          
+        case 'phone':
+          conditions.add('phone LIKE ?');
+          params.add('%$value%');
+          break;
+          
         case 'geo_unit_id':
           // Hierarchical filter: match direct geo_unit_id OR check if it's in ancestors
           conditions.add('(geo_unit_id = ? OR ancestors LIKE ?)');
@@ -254,11 +274,18 @@ class AppRepository {
 
 static Future<String?> getAssetUrl(String assetType) async {
   try {
+    Logger.logInfo('🔍 [DB FETCH] Looking for asset_type: $assetType');
     final results = await db.getOptional(
       'SELECT file_url FROM campaign_assets WHERE asset_type = ? AND is_active = 1 LIMIT 1',
       [assetType],
     );
-    return results?['file_url'] as String?;
+    final url = results?['file_url'] as String?;
+    if (url != null) {
+      Logger.logInfo('✅ [DB FETCH] Found URL for $assetType: $url');
+    } else {
+      Logger.logInfo('❌ [DB FETCH] No URL found for $assetType (results: $results)');
+    }
+    return url;
   } catch (e, st) {
     Logger.logError(e, st, 'Repository failed to fetch asset URL');
     return null;

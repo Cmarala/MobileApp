@@ -65,10 +65,10 @@ class AuthService {
         Logger.logInfo('App activated successfully for user: ${user.id}');
         return user; 
 
-      } on SocketException catch (e, st) {
+      } on SocketException {
         if (attempt == maxRetries) throw Exception('Network unreachable.');
         await Future.delayed(baseDelay * (1 << (attempt - 1)));
-      } on TimeoutException catch (e, st) {
+      } on TimeoutException {
         if (attempt == maxRetries) throw Exception('Connection timeout.');
         await Future.delayed(baseDelay * (1 << (attempt - 1)));
       } catch (error, stackTrace) {
