@@ -50,11 +50,11 @@ class VoterListCard extends StatelessWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         side: BorderSide(color: Colors.grey.shade200, width: 1),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
@@ -73,7 +73,7 @@ class VoterListCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: voter.favorability.color.withOpacity(0.4),
+                          color: voter.favorability.color.withValues(alpha: 0.4),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -96,8 +96,8 @@ class VoterListCard extends StatelessWidget {
                     Text(
                       '${voter.partNo}/${voter.serialNumber}',
                       style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[800],
+                        fontSize: 11,
+                        color: Colors.black87,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -106,8 +106,8 @@ class VoterListCard extends StatelessWidget {
                     Text(
                       '${voter.partNo}',
                       style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[800],
+                        fontSize: 11,
+                        color: Colors.black87,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -116,8 +116,8 @@ class VoterListCard extends StatelessWidget {
                     Text(
                       '${voter.serialNumber}',
                       style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[800],
+                        fontSize: 11,
+                        color: Colors.black87,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -129,8 +129,8 @@ class VoterListCard extends StatelessWidget {
                     Text(
                       ageGenderText,
                       style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[700],
+                        fontSize: 12,
+                        color: Colors.black87,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -149,25 +149,25 @@ class VoterListCard extends StatelessWidget {
                       voterName.isEmpty ? 'Unknown' : voterName,
                       style: const TextStyle(
                         fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: Colors.black87,
+                        fontSize: 15,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     
                     // Relative Name - 2 lines allowed with icon
                     if (relationName.isNotEmpty) ...[
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.person_outline, size: 12, color: Colors.grey[600]),
+                          Icon(Icons.person_outline, size: 14, color: Colors.grey[700]),
                           const SizedBox(width: 4),
                           if (voter.relation != null) ...[
                             Text(
                               '(${voter.relation}) ',
                               style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey[800],
+                                fontSize: 12,
+                                color: Colors.black87,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -176,8 +176,9 @@ class VoterListCard extends StatelessWidget {
                             child: Text(
                               relationName,
                               style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey[700],
+                                fontSize: 12,
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w500,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -185,7 +186,7 @@ class VoterListCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 4),
                     ],
                     
                     // Address - 2 lines with icon
@@ -195,15 +196,16 @@ class VoterListCard extends StatelessWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(top: 1),
-                            child: Icon(Icons.home_outlined, size: 12, color: Colors.grey[600]),
+                            child: Icon(Icons.home_outlined, size: 14, color: Colors.grey[700]),
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               address,
                               style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.grey[600],
+                                fontSize: 11,
+                                color: Colors.grey[800],
+                                fontWeight: FontWeight.w400,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -211,37 +213,39 @@ class VoterListCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 4),
                     ],
                     
                     // EPIC ID and Mobile in one row - compact
                     Row(
                       children: [
                         if (voter.epicId != null) ...[
-                          Icon(Icons.badge, size: 11, color: Colors.grey[500]),
-                          const SizedBox(width: 2),
+                          Icon(Icons.badge, size: 13, color: Colors.grey[700]),
+                          const SizedBox(width: 3),
                           Text(
                             voter.epicId!,
                             style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey[700],
+                              fontSize: 11,
+                              color: Colors.black87,
                               fontFamily: 'monospace',
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                         if (voter.epicId != null && voter.phone != null) ...[
-                          const SizedBox(width: 6),
-                          Text('•', style: TextStyle(fontSize: 10, color: Colors.grey[500])),
-                          const SizedBox(width: 6),
+                          const SizedBox(width: 8),
+                          Text('•', style: TextStyle(fontSize: 11, color: Colors.grey[600])),
+                          const SizedBox(width: 8),
                         ],
                         if (voter.phone != null) ...[
-                          Icon(Icons.phone, size: 11, color: Colors.grey[500]),
-                          const SizedBox(width: 2),
+                          Icon(Icons.phone, size: 13, color: Colors.grey[700]),
+                          const SizedBox(width: 3),
                           Text(
                             voter.phone!,
                             style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.grey[700],
+                              fontSize: 11,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],

@@ -77,7 +77,7 @@ class AppRepository {
           break;
           
         case 'booth_no':
-          conditions.add('section_number LIKE ?');
+          conditions.add('part_no LIKE ?');
           params.add('%$value%');
           break;
           

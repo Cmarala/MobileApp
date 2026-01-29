@@ -20,28 +20,64 @@ class SearchFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasText = controller.text.isNotEmpty;
+    final primaryColor = Theme.of(context).primaryColor;
+    
     return Container(
-      height: 42,
+      height: 44,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade300),
+        gradient: hasText 
+            ? LinearGradient(
+                colors: [
+                  primaryColor.withValues(alpha: 0.15),
+                  primaryColor.withValues(alpha: 0.20),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : null,
+        color: hasText ? null : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: hasText ? primaryColor : primaryColor.withValues(alpha: 1),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: hasText 
+                ? primaryColor.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.08),
+            blurRadius: hasText ? 6 : 3,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
-        style: const TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: hasText ? FontWeight.w500 : FontWeight.normal,
+        ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontSize: 12),
+          labelStyle: TextStyle(
+            fontSize: 12,
+            color: hasText ? primaryColor : Colors.grey.shade700,
+            fontWeight: hasText ? FontWeight.w600 : FontWeight.w500,
+          ),
           hintText: hint,
-          hintStyle: const TextStyle(fontSize: 12),
-          prefixIcon: Icon(icon, size: 16, color: Colors.blueGrey),
-          suffixIcon: controller.text.isNotEmpty
+          hintStyle: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          prefixIcon: Icon(
+            icon, 
+            size: 18, 
+            color: hasText ? primaryColor : Colors.grey.shade600,
+          ),
+          suffixIcon: hasText
               ? IconButton(
                   padding: EdgeInsets.zero,
-                  iconSize: 14,
-                  icon: const Icon(Icons.clear),
+                  iconSize: 18,
+                  icon: Icon(Icons.cancel, color: primaryColor),
                   onPressed: () {
                     controller.clear();
                     onClear?.call();

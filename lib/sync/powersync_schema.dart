@@ -52,7 +52,9 @@ final schema = Schema([
     Column.text('section1_text'),
     Column.text('section1_text_local'),
     Column.text('section3_text'),
-    Column.text('section3_text_local')
+    Column.text('section3_text_local'),
+    Column.text('candidate_name'),
+    Column.text('candidate_name_local')
   ]),
   Table('campaign_assets', [
     Column.text('campaign_id'),
@@ -120,7 +122,9 @@ final schema = Schema([
     Column.text('name_local'),
     Column.text('address_local'),
     Column.text('section_name_local'),
-    Column.text('relation_name_local')
+    Column.text('relation_name_local'),
+    Column.text('shifted_house_no'),
+    Column.text('shifted_address')
   ]),
   Table('geo_units', [
     Column.text('campaign_id'),

@@ -39,6 +39,7 @@ class _VoterConsoleScreenState extends ConsumerState<VoterConsoleScreen> {
   @override
   Widget build(BuildContext context) {
     final isPickerMode = widget.onVoterSelected != null;
+    final primaryColor = Theme.of(context).primaryColor;
     
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -48,12 +49,13 @@ class _VoterConsoleScreenState extends ConsumerState<VoterConsoleScreen> {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           if (_controller.hasActiveFilters)
             IconButton(
-              icon: const Icon(Icons.clear_all, color: Colors.red),
+              icon: const Icon(Icons.clear_all, color: Colors.white),
               onPressed: _controller.clearAllFilters,
               tooltip: 'Clear All Filters',
             ),
@@ -63,8 +65,17 @@ class _VoterConsoleScreenState extends ConsumerState<VoterConsoleScreen> {
         children: [
           // Compact Filters Section
           Container(
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
             child: Column(
               children: [
                 // Name filter with voice search
@@ -135,8 +146,8 @@ class _VoterConsoleScreenState extends ConsumerState<VoterConsoleScreen> {
                     Expanded(
                       child: SearchFilterChip(
                         controller: _controller.boothNoController,
-                        label: 'Booth',
-                        icon: Icons.place_outlined,
+                        label: 'Part',
+                        icon: Icons.list_alt_outlined,
                         hint: '123',
                         keyboardType: TextInputType.number,
                         onClear: () => setState(() {}),
