@@ -1,10 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/volunteer/home_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
 import 'package:mobileapp/sync/powersync_backend_connector.dart';
-import 'package:mobileapp/utils/image_cache.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:mobileapp/utils/asset_manager.dart';
 import 'package:mobileapp/utils/logger.dart';
 
 class SyncScreen extends StatefulWidget {
@@ -15,100 +14,127 @@ class SyncScreen extends StatefulWidget {
 }
 
 class _SyncScreenState extends State<SyncScreen> {
-  bool _syncing = true;
+  String _syncStatus = "Initializing...";
+  String? _splashPath;
   String? _error;
+  bool _isSyncingVoters = false;
 
   @override
   void initState() {
     super.initState();
-    _startSync();
+    _startSetup();
   }
 
-  Future<void> _startSync() async {
-    try {
-      Logger.logInfo('Starting sync process...');
-      // Initialize PowerSyncService (local DB, repositories, etc)
-      Logger.logInfo('Initializing PowerSyncService...');
-      await PowerSyncService().initialize();
-      Logger.logInfo('PowerSyncService initialized. Creating connector...');
-      final connector = MyPowerSyncBackendConnector();
-      final db = PowerSyncService().db;
-      Logger.logInfo('About to check initial_sync_done flag...');
-      final prefs = await SharedPreferences.getInstance();
-      final isFirstSync = !(prefs.getBool('initial_sync_done') ?? false);
-      Logger.logInfo('isFirstSync: $isFirstSync');
-      try {
-        await db.connect(connector: connector);
-        Logger.logInfo('db.connect(connector: connector) completed successfully.');
-      } catch (e, st) {
-        Logger.logError('db.connect(connector: connector) threw: $e\n$st', st);
-        rethrow;
+ Future<void> _startSetup() async {
+  try {
+    setState(() => _error = null);
+
+    // 1. Initialize & Connect
+    await PowerSyncService().initialize();
+    final db = PowerSyncService().db;
+    db.statusStream.listen(_onSyncStatusChange);
+    await db.connect(connector: MyPowerSyncBackendConnector());
+
+    // 2. STAGE 1: Branding (Poll for Splash)
+    setState(() => _syncStatus = "Setting up branding...");
+    int splashRetries = 0;
+    while (_splashPath == null && splashRetries < 5) {
+      final path = await AssetManager.getAssetPath('splash_screen_image');
+      if (path != null) {
+        if (mounted) setState(() => _splashPath = path);
+        break;
       }
-      Logger.logInfo('Database connected. Sync should be running.');
+      await Future.delayed(const Duration(milliseconds: 800));
+      splashRetries++;
+    }
 
-      // Download and cache campaign asset images for offline use
-      try {
-        // Query campaign_assets for image URLs
-        final assetRows = await db.query('SELECT file_url, title FROM campaign_assets WHERE file_url IS NOT NULL AND is_active = 1');
-        for (final row in assetRows) {
-          final url = row['file_url'] as String?;
-          final title = row['title'] as String? ?? 'asset';
-          if (url != null && url.isNotEmpty) {
-            // Use title or hash for filename
-            final filename = '${title.replaceAll(' ', '_')}_${url.hashCode}.img';
-            // Download and cache
-            await ImageCacheUtil.downloadAndCacheImage(url, filename);
-          }
-        }
-        Logger.logInfo('Campaign asset images downloaded and cached.');
-      } catch (e, st) {
-        Logger.logError('Image download/cache failed: $e\n$st', st);
-      }
+    // 3. STAGE 2: Optimize Offline Files
+    setState(() => _syncStatus = "Optimizing offline files...");
+    await AssetManager.cacheAllActiveAssets();
 
-      if (isFirstSync) {
-        await prefs.setBool('initial_sync_done', true);
-        Logger.logInfo('Initial sync done, navigating to HomeScreen.');
-      } else {
-        Logger.logInfo('Quick sync done, navigating to HomeScreen.');
-      }
+    // 4. STAGE 3: Massive Voter Sync (Generic Status)
+    setState(() {
+      _isSyncingVoters = true;
+      _syncStatus = "Syncing voter records...";
+    });
 
-      if (!mounted) return;
-      setState(() => _syncing = false);
+    // This is the functional gate for the 1 Lakh records
+    await db.waitForFirstSync();
 
-      // Navigate to HomeScreen
+    // 5. FINISH
+    if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
-    } catch (e, st) {
-      Logger.logError('Sync failed: $e\n$st', st);
-      if (mounted) setState(() { _error = e.toString(); _syncing = false; });
+    }
+  } catch (e, st) {
+    Logger.logError('Sync sequence failed', st);
+    if (mounted) setState(() => _error = "Sync failed. Check connection.");
+  }
+}
+
+  void _onSyncStatusChange(dynamic status) {
+    if (!mounted) return;
+    if (status.downloading == true && _isSyncingVoters) {
+      setState(() => _syncStatus = "Ingesting records into local storage...");
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _syncing
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Downloading campaign data...'),
-                ],
-              )
-            : _error != null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error, color: Colors.red, size: 48),
-                      const SizedBox(height: 16),
-                      Text('Sync failed: $_error'),
-                    ],
-                  )
-                : const SizedBox.shrink(),
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          _buildSplashBackground(),
+          Container(color: Colors.black.withAlpha(140)),
+          Center(
+            child: _error != null ? _buildErrorView() : _buildLoadingView(),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildSplashBackground() {
+    if (_splashPath == null) return const SizedBox.shrink();
+    final file = File(_splashPath!);
+    if (!file.existsSync()) return const SizedBox.shrink();
+    return Positioned.fill(child: Image.file(file, fit: BoxFit.cover));
+  }
+
+  Widget _buildLoadingView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+        const SizedBox(height: 24),
+        Text(_syncStatus, 
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 40),
+          child: Text(
+            "IMPORTANT: Keep app open while we prepare your campaign data.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white70, fontSize: 13),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorView() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.cloud_off, color: Colors.redAccent, size: 60),
+        const SizedBox(height: 16),
+        Text(_error!, style: const TextStyle(color: Colors.white)),
+        const SizedBox(height: 24),
+        ElevatedButton(onPressed: _startSetup, child: const Text("Retry Sync")),
+      ],
     );
   }
 }

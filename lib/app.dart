@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobileapp/auth/activate_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -10,7 +11,7 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Placeholder(), // Replace with your home screen
+      home: const ActivateScreen(),
     );
   }
 }

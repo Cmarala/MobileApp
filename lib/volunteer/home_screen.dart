@@ -1,5 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobileapp/data/repositories.dart';
+import 'package:mobileapp/utils/asset_manager.dart';
+import 'package:mobileapp/features/voter_search/screens/voter_console_screen.dart';
+import 'package:mobileapp/features/survey/screens/survey_list_screen.dart';
+import 'package:mobileapp/features/polling/screens/polling_dashboard_screen.dart' as polling;
+import 'package:mobileapp/features/reports/screens/reports_entry_screen.dart';
+import 'package:mobileapp/sync/sync_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
+import 'package:mobileapp/widgets/app_bottom_nav.dart';
+import 'package:mobileapp/features/settings/screens/settings_screen.dart';
+import 'package:mobileapp/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,51 +21,105 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final List<Map<String, dynamic>> _features = [
-    {'icon': Icons.search, 'label': 'Voter Search'},
-    {'icon': Icons.poll, 'label': 'Survey'},
-    {'icon': Icons.sync, 'label': 'Data Sync'},
-    {'icon': Icons.bar_chart, 'label': 'Reports'},
-    {'icon': Icons.settings, 'label': 'Settings'},
-  ];
+  List<Map<String, dynamic>> _localizedFeatures(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      {'icon': Icons.search, 'label': l10n.voterSearch, 'route': 'voter_search'},
+      {'icon': Icons.poll, 'label': l10n.survey, 'route': 'survey'},
+      {'icon': Icons.how_to_reg, 'label': l10n.pollingLive, 'route': 'polling_live'},
+      {'icon': Icons.sync, 'label': l10n.sync, 'route': 'sync'},
+      {'icon': Icons.bar_chart, 'label': l10n.reports, 'route': 'reports'},
+      {'icon': Icons.settings, 'label': l10n.settings, 'route': 'settings'},
+      //{'icon': Icons.people, 'label': 'Volunteers', 'route': null},
+    ];
+  }
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final features = _localizedFeatures(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Campaign Name'),
+        title: FutureBuilder<Map<String, dynamic>?>(
+          future: AppRepository.getActiveCampaign(),
+          builder: (context, snapshot) {
+            final name = snapshot.data?['name'] ?? 'Campaign Console';
+            return Text(name, style: const TextStyle(fontWeight: FontWeight.bold));
+          },
+        ),
+        centerTitle: true,
+        elevation: 0,
       ),
       body: Column(
         children: [
-          SizedBox(
-            width: double.infinity,
-            height: 200,
-            child: Image.network(
-              'https://via.placeholder.com/800x200',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: Colors.grey[300],
-                child: const Center(child: Icon(Icons.image, size: 64)),
-              ),
+          // Banner Section: Using Path-First Architecture
+          Expanded(
+            flex: 6,
+            child: FutureBuilder<String?>(
+              // Logic is now purely "Get me the file path"
+              future: AssetManager.getAssetPath('home_screen_image'),
+              builder: (context, snapshot) {
+                return _buildBannerImage(snapshot.data);
+              },
             ),
           ),
+          // Features Grid
           Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
+            flex: 4,
+            child: GridView.builder(
               padding: const EdgeInsets.all(16),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: _features
-                  .map((feature) => _buildFeatureButton(
-                        context,
-                        icon: feature['icon'],
-                        label: feature['label'],
-                      ))
-                  .toList(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 12,
+                crossAxisSpacing: 12,
+              ),
+              itemCount: features.length,
+              itemBuilder: (context, index) {
+                final feature = features[index];
+                return _buildFeatureButton(
+                  context,
+                  icon: feature['icon'],
+                  label: feature['label'],
+                );
+              },
             ),
           ),
         ],
       ),
+      bottomNavigationBar: AppBottomNav(
+        currentIndex: _selectedIndex,
+        onTap: (index) => setState(() => _selectedIndex = index),
+      ),
+    );
+  }
+
+  /// UI Logic: Handles how to display the file once AssetManager finds it
+  Widget _buildBannerImage(String? path) {
+    if (path == null) {
+      return _buildImagePlaceholder();
+    }
+
+    final file = File(path);
+    if (!file.existsSync()) {
+      return _buildImagePlaceholder();
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      child: Image.file(
+        file,
+        fit: BoxFit.cover,
+        // If file is corrupted, show placeholder
+        errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
+      ),
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: double.infinity,
+      color: Colors.grey[200],
+      child: const Icon(Icons.campaign_outlined, size: 64, color: Colors.grey),
     );
   }
 
@@ -63,26 +129,171 @@ class _HomeScreenState extends State<HomeScreen> {
     required String label,
   }) {
     return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => Scaffold(
-                appBar: AppBar(title: Text(label)),
-                body: Center(child: Text('$label screen')),
-              ),
-            ),
-          );
-        },
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _handleFeatureTap(context, label),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48),
+            Icon(icon, size: 32, color: Theme.of(context).primaryColor),
             const SizedBox(height: 8),
-            Text(label, textAlign: TextAlign.center),
+            Text(
+              label, 
+              textAlign: TextAlign.center, 
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void _handleFeatureTap(BuildContext context, String label) async {
+    // Find the feature config
+    final features = _localizedFeatures(context);
+    final feature = features.firstWhere(
+      (f) => f['label'] == label,
+      orElse: () => {'route': null},
+    );
+
+    final route = feature['route'];
+    
+    if (route == 'voter_search') {
+      try {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const VoterConsoleScreen()),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening Voter Search: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } else if (route == 'survey') {
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
+      
+      try {
+        final campaign = await AppRepository.getActiveCampaign();
+        final campaignId = campaign?['id'];
+        
+        if (campaignId == null) {
+          if (mounted) {
+            messenger.showSnackBar(
+              const SnackBar(
+                content: Text('No active campaign found'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        // Get user's geo_unit_id from SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        final geoUnitId = prefs.getString('geo_unit_id');
+        
+        if (geoUnitId == null) {
+          if (mounted) {
+            messenger.showSnackBar(
+              const SnackBar(
+                content: Text('User geo unit not found. Please re-activate the app.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          return;
+        }
+
+        if (mounted) {
+          navigator.push(
+            MaterialPageRoute(
+              builder: (context) => SurveyListScreen(
+                db: PowerSyncService().db,
+                campaignId: campaignId,
+                currentGeoUnitId: geoUnitId,
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text('Error opening Survey: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } else if (route == 'polling_live') {
+      try {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return polling.PollingDashboardScreen();
+            },
+          ),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening Polling Live: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } else if (route == 'sync') {
+      try {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const SyncScreen()),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening Sync: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } else if (route == 'settings') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      );
+    } else if (route == 'reports') {
+      try {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const ReportsEntryScreen()),
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error opening Reports: ${e.toString()}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$label feature is not yet available')),
+      );
+    }
   }
 }

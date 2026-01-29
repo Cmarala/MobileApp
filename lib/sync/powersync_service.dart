@@ -1,36 +1,28 @@
-// PowerSyncService: wires up schema, adapters, and manages sync
-import 'package:powersync/powersync.dart' as ps;
+// PowerSyncService: Singleton service for PowerSync database management
+import 'package:powersync/powersync.dart';
 import 'powersync_schema.dart';
-// import '../models/entities.dart';
-import '../data/repositories.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-
+import 'package:mobileapp/utils/logger.dart';
 
 class PowerSyncService {
   PowerSyncService._internal();
   static final PowerSyncService _instance = PowerSyncService._internal();
   factory PowerSyncService() => _instance;
 
-  late final ps.PowerSyncDatabase db;
-  late final ReligionRepository religionRepo;
-  late final CasteRepository casteRepo;
-  late final SubCasteRepository subCasteRepo;
-  late final EducationRepository educationRepo;
-  late final OccupationRepository occupationRepo;
-  // ...add for all entities
+  late final PowerSyncDatabase db;
+  bool _initialized = false;
 
   Future<void> initialize() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final dbPath = '${dir.path}/powersync.db';
-    db = ps.PowerSyncDatabase(schema: schema, path: dbPath);
-    religionRepo = ReligionRepository(db);
-    casteRepo = CasteRepository(db);
-    subCasteRepo = SubCasteRepository(db);
-    educationRepo = EducationRepository(db);
-    occupationRepo = OccupationRepository(db);
-    // ...init for all entities
+    if (_initialized) return; // Already initialized
+    
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final dbPath = '${dir.path}/powersync.db';
+      db = PowerSyncDatabase(schema: schema, path: dbPath);
+      _initialized = true;
+    } catch (e, stackTrace) {
+      Logger.logError(e, stackTrace, 'Failed to initialize local database');
+      rethrow;
+    }
   }
-
-  // Add methods to start sync, get adapters, etc.
 }
