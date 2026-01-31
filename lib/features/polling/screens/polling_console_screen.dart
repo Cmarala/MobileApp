@@ -84,7 +84,7 @@ class PollingConsoleScreen extends ConsumerWidget {
               Switch(
                 value: state.isHistoryMode,
                 onChanged: (_) => controller.toggleMode(),
-                activeColor: Colors.orange,
+                activeThumbColor: Colors.orange,
               ),
               const Text('Voted (Undo)'),
             ],

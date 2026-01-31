@@ -14,11 +14,11 @@ class SurveyListScreen extends ConsumerStatefulWidget {
   final String currentGeoUnitId; // The volunteer's current booth
 
   const SurveyListScreen({
-    Key? key,
+    super.key,
     required this.db,
     required this.campaignId,
     required this.currentGeoUnitId,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<SurveyListScreen> createState() => _SurveyListScreenState();

@@ -313,4 +313,97 @@ class AppLocalizationsTe extends AppLocalizations {
 
   @override
   String get srno => 'క్ర.సం';
+
+  @override
+  String get filters => 'ఫిల్టర్‌లు';
+
+  @override
+  String get clearAll => 'అన్నీ క్లియర్ చేయండి';
+
+  @override
+  String get apply => 'వర్తించు';
+
+  @override
+  String get geographic => 'భౌగోళిక';
+
+  @override
+  String get demographics => 'జనాభా';
+
+  @override
+  String get activity => 'కార్యాచరణ';
+
+  @override
+  String get contact => 'సంప్రదించండి';
+
+  @override
+  String get selectGeoUnits => 'భౌగోళిక యూనిట్లను ఎంచుకోండి';
+
+  @override
+  String get ageRange => 'వయస్సు పరిధి';
+
+  @override
+  String get minAge => 'కనీస వయస్సు';
+
+  @override
+  String get maxAge => 'గరిష్ఠ వయస్సు';
+
+  @override
+  String get religion => 'మతం';
+
+  @override
+  String get caste => 'కులం';
+
+  @override
+  String get education => 'చదువు';
+
+  @override
+  String get dead => 'మరణించారు';
+
+  @override
+  String get shifted => 'మార్చారు';
+
+  @override
+  String get neverVisited => 'ఎప్పుడూ సందర్శించలేదు';
+
+  @override
+  String get lastVisitedDateRange => 'చివరి సందర్శన తేదీ పరిధి';
+
+  @override
+  String get selectFromDate => 'ప్రారంభ తేదీని ఎంచుకోండి';
+
+  @override
+  String get selectToDate => 'ముగింపు తేదీని ఎంచుకోండి';
+
+  @override
+  String get from => 'నుండి';
+
+  @override
+  String get to => 'వరకు';
+
+  @override
+  String get hasPhone => 'ఫోన్ ఉందా';
+
+  @override
+  String get hasMobile => '10-అంకెల మొబైల్ ఉందా';
+
+  @override
+  String get selectFavorability => 'అనుకూలత ఎంచుకోండి';
+
+  @override
+  String get totalVoters => 'మొత్తం ఓటర్లు';
+
+  @override
+  String get votersContactedToday => 'సంప్రదించిన ఓటర్లు';
+
+  @override
+  String get polledVoters => 'పోల్ చేసిన ఓటర్లు';
+
+  @override
+  String get pendingContacts => 'పెండింగ్ పరిచయాలు';
+
+  @override
+  String get favorabilityDistribution => 'అనుకూలత పంపిణీ';
+
+  @override
+  String get geoUnitPerformance => 'జియో-యూనిట్ పనితీరు';
 }

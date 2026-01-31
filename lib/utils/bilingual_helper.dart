@@ -5,6 +5,7 @@
 /// - If language is Local (non-'en') → use local field with English fallback
 /// 
 /// This ensures consistent bilingual behavior everywhere in the app.
+library;
 
 class BilingualHelper {
   /// Get the appropriate field value based on current language

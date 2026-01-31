@@ -619,7 +619,7 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
             if (voter.isShifted) ...[
               const SizedBox(height: 12),
               Text(
-                '${l10n.shiftedAddress}',
+                l10n.shiftedAddress,
                 style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),

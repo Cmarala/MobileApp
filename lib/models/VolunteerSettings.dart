@@ -44,7 +44,7 @@ class VolunteerSettings {
     String? selectedFooterText,
   }) {
     return VolunteerSettings(
-      campaignId: this.campaignId,
+      campaignId: campaignId,
       selectedHeaderAssetId: selectedHeaderAssetId ?? this.selectedHeaderAssetId,
       selectedHeaderUrl: selectedHeaderUrl ?? this.selectedHeaderUrl,
       selectedFooterText: selectedFooterText ?? this.selectedFooterText,

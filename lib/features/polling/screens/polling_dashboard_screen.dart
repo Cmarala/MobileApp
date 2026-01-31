@@ -266,7 +266,7 @@ class _BoothSummaryCard extends ConsumerWidget {
                           ],
                           tierColor: tier.color,
                         );
-                      }).toList(),
+                      }),
                     ],
                   );
                 },

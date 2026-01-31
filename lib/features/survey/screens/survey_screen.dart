@@ -22,14 +22,14 @@ class SurveyScreen extends ConsumerStatefulWidget {
   final PowerSyncDatabase db; 
 
   const SurveyScreen({
-    Key? key,
+    super.key,
     required this.db,
     required this.surveyId,
     required this.campaignId,
     required this.geoUnitId,
     this.voterId,
     this.voterSnapshot,
-  }) : super(key: key);
+  });
 
   @override
   ConsumerState<SurveyScreen> createState() => _SurveyScreenState();
@@ -111,7 +111,7 @@ class _SurveyScreenState extends ConsumerState<SurveyScreen> {
                     onTextChanged: (val) => _controller.setTextAnswer(q.id, val),
                     onOptionChanged: (ids) => _controller.setOptionAnswer(q.id, ids),
                   );
-                }).toList(),
+                }),
 
                 // 3. Submit Button
                 const SizedBox(height: 32),

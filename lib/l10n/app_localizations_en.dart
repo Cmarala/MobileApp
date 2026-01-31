@@ -312,4 +312,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get srno => 'Sr.No';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get clearAll => 'Clear All';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get geographic => 'Geographic';
+
+  @override
+  String get demographics => 'Demographics';
+
+  @override
+  String get activity => 'Activity';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get selectGeoUnits => 'Select Geographic Units';
+
+  @override
+  String get ageRange => 'Age Range';
+
+  @override
+  String get minAge => 'Min Age';
+
+  @override
+  String get maxAge => 'Max Age';
+
+  @override
+  String get religion => 'Religion';
+
+  @override
+  String get caste => 'Caste';
+
+  @override
+  String get education => 'Education';
+
+  @override
+  String get dead => 'Dead';
+
+  @override
+  String get shifted => 'Shifted';
+
+  @override
+  String get neverVisited => 'Never Visited';
+
+  @override
+  String get lastVisitedDateRange => 'Last Visited Date Range';
+
+  @override
+  String get selectFromDate => 'Select From Date';
+
+  @override
+  String get selectToDate => 'Select To Date';
+
+  @override
+  String get from => 'From';
+
+  @override
+  String get to => 'To';
+
+  @override
+  String get hasPhone => 'Has Phone';
+
+  @override
+  String get hasMobile => 'Has 10-Digit Mobile';
+
+  @override
+  String get selectFavorability => 'Select Favorability';
+
+  @override
+  String get totalVoters => 'Total Voters';
+
+  @override
+  String get votersContactedToday => 'Voters Contacted';
+
+  @override
+  String get polledVoters => 'Polled Voters';
+
+  @override
+  String get pendingContacts => 'Pending Contacts';
+
+  @override
+  String get favorabilityDistribution => 'Favorability Distribution';
+
+  @override
+  String get geoUnitPerformance => 'Geo-Unit Performance';
 }

@@ -703,6 +703,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sr.No'**
   String get srno;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @geographic.
+  ///
+  /// In en, this message translates to:
+  /// **'Geographic'**
+  String get geographic;
+
+  /// No description provided for @demographics.
+  ///
+  /// In en, this message translates to:
+  /// **'Demographics'**
+  String get demographics;
+
+  /// No description provided for @activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contact;
+
+  /// No description provided for @selectGeoUnits.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Geographic Units'**
+  String get selectGeoUnits;
+
+  /// No description provided for @ageRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Age Range'**
+  String get ageRange;
+
+  /// No description provided for @minAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Age'**
+  String get minAge;
+
+  /// No description provided for @maxAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Age'**
+  String get maxAge;
+
+  /// No description provided for @religion.
+  ///
+  /// In en, this message translates to:
+  /// **'Religion'**
+  String get religion;
+
+  /// No description provided for @caste.
+  ///
+  /// In en, this message translates to:
+  /// **'Caste'**
+  String get caste;
+
+  /// No description provided for @education.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get education;
+
+  /// No description provided for @dead.
+  ///
+  /// In en, this message translates to:
+  /// **'Dead'**
+  String get dead;
+
+  /// No description provided for @shifted.
+  ///
+  /// In en, this message translates to:
+  /// **'Shifted'**
+  String get shifted;
+
+  /// No description provided for @neverVisited.
+  ///
+  /// In en, this message translates to:
+  /// **'Never Visited'**
+  String get neverVisited;
+
+  /// No description provided for @lastVisitedDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Visited Date Range'**
+  String get lastVisitedDateRange;
+
+  /// No description provided for @selectFromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select From Date'**
+  String get selectFromDate;
+
+  /// No description provided for @selectToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select To Date'**
+  String get selectToDate;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get from;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get to;
+
+  /// No description provided for @hasPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Has Phone'**
+  String get hasPhone;
+
+  /// No description provided for @hasMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Has 10-Digit Mobile'**
+  String get hasMobile;
+
+  /// No description provided for @selectFavorability.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Favorability'**
+  String get selectFavorability;
+
+  /// No description provided for @totalVoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Voters'**
+  String get totalVoters;
+
+  /// No description provided for @votersContactedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Voters Contacted'**
+  String get votersContactedToday;
+
+  /// No description provided for @polledVoters.
+  ///
+  /// In en, this message translates to:
+  /// **'Polled Voters'**
+  String get polledVoters;
+
+  /// No description provided for @pendingContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Contacts'**
+  String get pendingContacts;
+
+  /// No description provided for @favorabilityDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorability Distribution'**
+  String get favorabilityDistribution;
+
+  /// No description provided for @geoUnitPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Geo-Unit Performance'**
+  String get geoUnitPerformance;
 }
 
 class _AppLocalizationsDelegate

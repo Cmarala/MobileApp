@@ -317,6 +317,4 @@ static Future<List<Map<String, dynamic>>> getActiveAssetMapping() async {
       'SELECT file_url, asset_type FROM campaign_assets WHERE is_active = 1 AND file_url IS NOT NULL'
     );
 }
-
-  
 }

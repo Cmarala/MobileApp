@@ -17,13 +17,13 @@ class QuestionRenderer extends ConsumerWidget {
   final Function(String value) onTextChanged;       
 
   const QuestionRenderer({
-    Key? key,
+    super.key,
     required this.question,
     this.currentAnswerValue,
     this.selectedOptionIds = const [], // Default to empty list
     required this.onOptionChanged,
     required this.onTextChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
