@@ -14,8 +14,14 @@ class MyPowerSyncBackendConnector extends ps.PowerSyncBackendConnector {
       final prefs = await SharedPreferences.getInstance();
       final jwt = prefs.getString('powersync_token');
 
-      if (jwt == null) return null;
+      Logger.logInfo('SYNC DEBUG: Fetching credentials - token exists: ${jwt != null}, token length: ${jwt?.length ?? 0}');
 
+      if (jwt == null) {
+        Logger.logError('No PowerSync token found', null, 'User may not be authenticated');
+        return null;
+      }
+
+      Logger.logInfo('SYNC DEBUG: Credentials endpoint: $powerSyncUrl');
       return ps.PowerSyncCredentials(endpoint: powerSyncUrl, token: jwt);
     } catch (e, stackTrace) {
       Logger.logError(e, stackTrace, 'Failed to fetch sync credentials');

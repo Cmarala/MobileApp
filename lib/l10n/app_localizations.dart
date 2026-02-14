@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @partSerial.
   ///
   /// In en, this message translates to:
-  /// **'Part/Serial'**
+  /// **'Booth/Serial'**
   String get partSerial;
 
   /// No description provided for @houseNo.
@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @part.
   ///
   /// In en, this message translates to:
-  /// **'Part'**
+  /// **'Booth'**
   String get part;
 
   /// No description provided for @srno.

@@ -35,8 +35,8 @@ mixin _$Voter {
   String? get sectionNumber => throw _privateConstructorUsedError;
   @JsonKey(name: 'section_name')
   String? get sectionName => throw _privateConstructorUsedError;
-  @JsonKey(name: 'part_no')
-  String? get partNo => throw _privateConstructorUsedError;
+  @JsonKey(name: 'booth_number')
+  String? get boothNumber => throw _privateConstructorUsedError;
   String? get name =>
       throw _privateConstructorUsedError; // Bilingual Name Support
   @JsonKey(name: 'name_local')
@@ -140,7 +140,7 @@ abstract class $VoterCopyWith<$Res> {
     @JsonKey(name: 'vid_2') String? vid2,
     @JsonKey(name: 'section_number') String? sectionNumber,
     @JsonKey(name: 'section_name') String? sectionName,
-    @JsonKey(name: 'part_no') String? partNo,
+    @JsonKey(name: 'booth_number') String? boothNumber,
     String? name,
     @JsonKey(name: 'name_local') String? nameLocal,
     int? age,
@@ -217,7 +217,7 @@ class _$VoterCopyWithImpl<$Res, $Val extends Voter>
     Object? vid2 = freezed,
     Object? sectionNumber = freezed,
     Object? sectionName = freezed,
-    Object? partNo = freezed,
+    Object? boothNumber = freezed,
     Object? name = freezed,
     Object? nameLocal = freezed,
     Object? age = freezed,
@@ -295,9 +295,9 @@ class _$VoterCopyWithImpl<$Res, $Val extends Voter>
                 ? _value.sectionName
                 : sectionName // ignore: cast_nullable_to_non_nullable
                       as String?,
-            partNo: freezed == partNo
-                ? _value.partNo
-                : partNo // ignore: cast_nullable_to_non_nullable
+            boothNumber: freezed == boothNumber
+                ? _value.boothNumber
+                : boothNumber // ignore: cast_nullable_to_non_nullable
                       as String?,
             name: freezed == name
                 ? _value.name
@@ -490,7 +490,7 @@ abstract class _$$VoterImplCopyWith<$Res> implements $VoterCopyWith<$Res> {
     @JsonKey(name: 'vid_2') String? vid2,
     @JsonKey(name: 'section_number') String? sectionNumber,
     @JsonKey(name: 'section_name') String? sectionName,
-    @JsonKey(name: 'part_no') String? partNo,
+    @JsonKey(name: 'booth_number') String? boothNumber,
     String? name,
     @JsonKey(name: 'name_local') String? nameLocal,
     int? age,
@@ -566,7 +566,7 @@ class __$$VoterImplCopyWithImpl<$Res>
     Object? vid2 = freezed,
     Object? sectionNumber = freezed,
     Object? sectionName = freezed,
-    Object? partNo = freezed,
+    Object? boothNumber = freezed,
     Object? name = freezed,
     Object? nameLocal = freezed,
     Object? age = freezed,
@@ -644,9 +644,9 @@ class __$$VoterImplCopyWithImpl<$Res>
             ? _value.sectionName
             : sectionName // ignore: cast_nullable_to_non_nullable
                   as String?,
-        partNo: freezed == partNo
-            ? _value.partNo
-            : partNo // ignore: cast_nullable_to_non_nullable
+        boothNumber: freezed == boothNumber
+            ? _value.boothNumber
+            : boothNumber // ignore: cast_nullable_to_non_nullable
                   as String?,
         name: freezed == name
             ? _value.name
@@ -833,7 +833,7 @@ class _$VoterImpl extends _Voter {
     @JsonKey(name: 'vid_2') this.vid2,
     @JsonKey(name: 'section_number') this.sectionNumber,
     @JsonKey(name: 'section_name') this.sectionName,
-    @JsonKey(name: 'part_no') this.partNo,
+    @JsonKey(name: 'booth_number') this.boothNumber,
     this.name,
     @JsonKey(name: 'name_local') this.nameLocal,
     this.age,
@@ -912,8 +912,8 @@ class _$VoterImpl extends _Voter {
   @JsonKey(name: 'section_name')
   final String? sectionName;
   @override
-  @JsonKey(name: 'part_no')
-  final String? partNo;
+  @JsonKey(name: 'booth_number')
+  final String? boothNumber;
   @override
   final String? name;
   // Bilingual Name Support
@@ -1039,7 +1039,7 @@ class _$VoterImpl extends _Voter {
 
   @override
   String toString() {
-    return 'Voter(id: $id, campaignId: $campaignId, geoUnitId: $geoUnitId, epicId: $epicId, vid: $vid, vid2: $vid2, sectionNumber: $sectionNumber, sectionName: $sectionName, partNo: $partNo, name: $name, nameLocal: $nameLocal, age: $age, gender: $gender, birthDate: $birthDate, phone: $phone, email: $email, houseNo: $houseNo, address: $address, addressLocal: $addressLocal, sectionNameLocal: $sectionNameLocal, relationNameLocal: $relationNameLocal, religionId: $religionId, casteId: $casteId, subCasteId: $subCasteId, educationId: $educationId, occupationId: $occupationId, relationName: $relationName, relation: $relation, isDead: $isDead, isRented: $isRented, isShifted: $isShifted, shiftedHouseNo: $shiftedHouseNo, shiftedAddress: $shiftedAddress, favorability: $favorability, lastVisitedAt: $lastVisitedAt, lastVisitedBy: $lastVisitedBy, isDeleted: $isDeleted, createdAt: $createdAt, updatedAt: $updatedAt, metadata: $metadata, createdByUserId: $createdByUserId, updatedByUserId: $updatedByUserId, geoUnitPath: $geoUnitPath, ancestors: $ancestors, latitude: $latitude, longitude: $longitude, geoAddress: $geoAddress, isPolled: $isPolled, serialNumber: $serialNumber, polledAt: $polledAt, polledByUserId: $polledByUserId)';
+    return 'Voter(id: $id, campaignId: $campaignId, geoUnitId: $geoUnitId, epicId: $epicId, vid: $vid, vid2: $vid2, sectionNumber: $sectionNumber, sectionName: $sectionName, boothNumber: $boothNumber, name: $name, nameLocal: $nameLocal, age: $age, gender: $gender, birthDate: $birthDate, phone: $phone, email: $email, houseNo: $houseNo, address: $address, addressLocal: $addressLocal, sectionNameLocal: $sectionNameLocal, relationNameLocal: $relationNameLocal, religionId: $religionId, casteId: $casteId, subCasteId: $subCasteId, educationId: $educationId, occupationId: $occupationId, relationName: $relationName, relation: $relation, isDead: $isDead, isRented: $isRented, isShifted: $isShifted, shiftedHouseNo: $shiftedHouseNo, shiftedAddress: $shiftedAddress, favorability: $favorability, lastVisitedAt: $lastVisitedAt, lastVisitedBy: $lastVisitedBy, isDeleted: $isDeleted, createdAt: $createdAt, updatedAt: $updatedAt, metadata: $metadata, createdByUserId: $createdByUserId, updatedByUserId: $updatedByUserId, geoUnitPath: $geoUnitPath, ancestors: $ancestors, latitude: $latitude, longitude: $longitude, geoAddress: $geoAddress, isPolled: $isPolled, serialNumber: $serialNumber, polledAt: $polledAt, polledByUserId: $polledByUserId)';
   }
 
   @override
@@ -1059,7 +1059,8 @@ class _$VoterImpl extends _Voter {
                 other.sectionNumber == sectionNumber) &&
             (identical(other.sectionName, sectionName) ||
                 other.sectionName == sectionName) &&
-            (identical(other.partNo, partNo) || other.partNo == partNo) &&
+            (identical(other.boothNumber, boothNumber) ||
+                other.boothNumber == boothNumber) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.nameLocal, nameLocal) ||
                 other.nameLocal == nameLocal) &&
@@ -1149,7 +1150,7 @@ class _$VoterImpl extends _Voter {
     vid2,
     sectionNumber,
     sectionName,
-    partNo,
+    boothNumber,
     name,
     nameLocal,
     age,
@@ -1218,7 +1219,7 @@ abstract class _Voter extends Voter {
     @JsonKey(name: 'vid_2') final String? vid2,
     @JsonKey(name: 'section_number') final String? sectionNumber,
     @JsonKey(name: 'section_name') final String? sectionName,
-    @JsonKey(name: 'part_no') final String? partNo,
+    @JsonKey(name: 'booth_number') final String? boothNumber,
     final String? name,
     @JsonKey(name: 'name_local') final String? nameLocal,
     final int? age,
@@ -1298,8 +1299,8 @@ abstract class _Voter extends Voter {
   @JsonKey(name: 'section_name')
   String? get sectionName;
   @override
-  @JsonKey(name: 'part_no')
-  String? get partNo;
+  @JsonKey(name: 'booth_number')
+  String? get boothNumber;
   @override
   String? get name; // Bilingual Name Support
   @override

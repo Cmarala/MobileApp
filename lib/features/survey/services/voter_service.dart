@@ -13,7 +13,7 @@ class VoterService {
     try {
       final results = await _db.getAll(
         'SELECT id, name, age, epic_id, phone, gender, house_no, '
-        'section_number, part_no FROM voters WHERE id = ?',
+        'section_number, booth_number FROM voters WHERE id = ?',
         [voterId],
       );
       

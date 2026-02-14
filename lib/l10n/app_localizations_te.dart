@@ -270,7 +270,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get boothName => 'బూత్ పేరు';
 
   @override
-  String get partSerial => 'భాగం/క్రమ సంఖ్య';
+  String get partSerial => 'బూత్/క్రమ సంఖ్య';
 
   @override
   String get houseNo => 'ఇంటి నంబర్';
@@ -309,7 +309,7 @@ class AppLocalizationsTe extends AppLocalizations {
   String get boothVoters => 'బూత్ ఓటర్లు';
 
   @override
-  String get part => 'భాగం';
+  String get part => 'బూత్';
 
   @override
   String get srno => 'క్ర.సం';

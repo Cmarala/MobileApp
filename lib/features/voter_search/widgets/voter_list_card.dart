@@ -34,6 +34,17 @@ class VoterListCard extends StatelessWidget {
       localValue: voter.addressLocal,
       currentLangCode: langCode,
     );
+    
+    // Combine house_no and address
+    String fullAddress = '';
+    if (voter.houseNo != null && voter.houseNo!.isNotEmpty) {
+      fullAddress = voter.houseNo!;
+      if (address.isNotEmpty) {
+        fullAddress += ', $address';
+      }
+    } else if (address.isNotEmpty) {
+      fullAddress = address;
+    }
 
     // Compact age/gender format: 26/F
     String ageGenderText = '';
@@ -92,9 +103,9 @@ class VoterListCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   
                   // Part No / Serial Number (bold)
-                  if (voter.partNo != null && voter.serialNumber != null) ...[
+                  if (voter.boothNumber != null && voter.serialNumber != null) ...[
                     Text(
-                      '${voter.partNo}/${voter.serialNumber}',
+                      '${voter.boothNumber}/${voter.serialNumber}',
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.black87,
@@ -102,9 +113,9 @@ class VoterListCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 3),
-                  ] else if (voter.partNo != null) ...[
+                  ] else if (voter.boothNumber != null) ...[
                     Text(
-                      '${voter.partNo}',
+                      '${voter.boothNumber}',
                       style: TextStyle(
                         fontSize: 11,
                         color: Colors.black87,
@@ -190,7 +201,7 @@ class VoterListCard extends StatelessWidget {
                     ],
                     
                     // Address - 2 lines with icon
-                    if (address.isNotEmpty) ...[
+                    if (fullAddress.isNotEmpty) ...[
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -201,7 +212,7 @@ class VoterListCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              address,
+                              fullAddress,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey[800],

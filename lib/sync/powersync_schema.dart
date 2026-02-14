@@ -82,7 +82,7 @@ final schema = Schema([
     Column.text('vid_2'),
     Column.text('section_number'),
     Column.text('section_name'),
-    Column.text('part_no'),
+    Column.text('booth_number'),
     Column.text('name'),
     Column.integer('age'),
     Column.text('gender'),
@@ -143,7 +143,8 @@ final schema = Schema([
     Column.text('path'),
     Column.text('booth_number'),
     Column.text('ancestors'),
-    Column.text('name_local')
+    Column.text('name_local'),
+    Column.integer('client_id')
   ]),
   Table('surveys', [
     Column.text('campaign_id'),
@@ -230,3 +231,4 @@ final schema = Schema([
     Column.text('answer_value')
   ])
 ]);
+

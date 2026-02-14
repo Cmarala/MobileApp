@@ -17,7 +17,7 @@ class Voter with _$Voter {
     @JsonKey(name: 'vid_2') String? vid2,
     @JsonKey(name: 'section_number') String? sectionNumber,
     @JsonKey(name: 'section_name') String? sectionName,
-    @JsonKey(name: 'part_no') String? partNo,
+    @JsonKey(name: 'booth_number') String? boothNumber,
     String? name,
     
     // Bilingual Name Support

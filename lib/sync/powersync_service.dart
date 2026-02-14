@@ -52,8 +52,8 @@ class PowerSyncService {
       ''');
       
       await db.execute('''
-        CREATE INDEX IF NOT EXISTS idx_voters_part_no 
-        ON voters(part_no);
+        CREATE INDEX IF NOT EXISTS idx_voters_booth_number 
+        ON voters(booth_number);
       ''');
       
       await db.execute('''

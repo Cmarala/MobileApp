@@ -146,7 +146,7 @@ class _VoterConsoleScreenState extends ConsumerState<VoterConsoleScreen> {
                     Expanded(
                       child: SearchFilterChip(
                         controller: _controller.boothNoController,
-                        label: 'Part',
+                        label: 'Booth No',
                         icon: Icons.list_alt_outlined,
                         hint: '123',
                         keyboardType: TextInputType.number,

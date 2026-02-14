@@ -73,12 +73,12 @@ class AppRepository {
           break;
           
         case 'door_no':
-          conditions.add('door_no LIKE ?');
+          conditions.add('house_no LIKE ?');
           params.add('%$value%');
           break;
           
         case 'booth_no':
-          conditions.add('part_no LIKE ?');
+          conditions.add('booth_number LIKE ?');
           params.add('%$value%');
           break;
           
@@ -124,7 +124,7 @@ class AppRepository {
       }
     });
 
-    final sql = 'SELECT * FROM $tableVoters WHERE ${conditions.join(' AND ')} ORDER BY name ASC LIMIT 500';
+    final sql = 'SELECT * FROM $tableVoters WHERE ${conditions.join(' AND ')} ORDER BY name ASC';
     return _watchList(sql, params, Voter.fromMap);
   }
 

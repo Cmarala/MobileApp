@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/volunteer/home_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
 import 'package:mobileapp/sync/powersync_backend_connector.dart';
 import 'package:mobileapp/sync/sync_state_manager.dart';
+import 'package:mobileapp/sync/sync_diagnostics.dart';
 import 'package:mobileapp/utils/asset_manager.dart';
 import 'package:mobileapp/utils/logger.dart';
 
@@ -19,6 +21,7 @@ class _SyncScreenState extends State<SyncScreen> {
   String? _splashPath;
   String? _error;
   bool _isSyncingVoters = false;
+  int _recordCount = 0;
 
   @override
   void initState() {
@@ -30,12 +33,30 @@ class _SyncScreenState extends State<SyncScreen> {
     try {
       setState(() => _error = null);
       
+      Logger.logInfo('=== SYNC DEBUG: Starting setup ===');
+      
+      // Run diagnostics first
+      final diagnostics = await SyncDiagnostics.runDiagnostics();
+      final report = SyncDiagnostics.generateReport(diagnostics);
+      Logger.logInfo(report);
+      
+      // Check for critical issues
+      if (diagnostics['has_powersync_token'] != true) {
+        throw Exception('Missing PowerSync token. Please reactivate the app.');
+      }
+      
+      if (diagnostics['powersync_url_valid'] != true) {
+        throw Exception('Invalid PowerSync URL configuration.');
+      }
+      
       // Initialize DB
       await PowerSyncService().initialize();
       final db = PowerSyncService().db;
+      Logger.logInfo('SYNC DEBUG: DB initialized');
       
       // Check if this is first-time or incremental sync
       final isFirstSync = !await SyncStateManager.hasCompletedInitialSync();
+      Logger.logInfo('SYNC DEBUG: isFirstSync = $isFirstSync');
       
       // SPLASH SCREEN FIX: Check cache first (works for returning users)
       final cachedSplash = await AssetManager.getAssetPath('splash_screen_image');
@@ -45,18 +66,50 @@ class _SyncScreenState extends State<SyncScreen> {
       
       if (isFirstSync) {
         // FULL SYNC FLOW - First-time users
-        db.statusStream.listen(_onSyncStatusChange);
+        Logger.logInfo('SYNC DEBUG: Starting FULL SYNC flow');
+        
+        // Setup status listener BEFORE connecting
+        db.statusStream.listen((status) {
+          Logger.logInfo('SYNC DEBUG: Status update - connected: ${status.connected}, downloading: ${status.downloading}, uploading: ${status.uploading}, lastSyncedAt: ${status.lastSyncedAt}');
+          _onSyncStatusChange(status);
+        });
+        
+        Logger.logInfo('SYNC DEBUG: Connecting to PowerSync...');
         await db.connect(connector: MyPowerSyncBackendConnector());
+        Logger.logInfo('SYNC DEBUG: Connected to PowerSync');
+        
+        // Check connection status
+        final currentStatus = db.currentStatus;
+        Logger.logInfo('SYNC DEBUG: Current status after connect - connected: ${currentStatus.connected}, hasSynced: ${currentStatus.hasSynced}');
         
         setState(() => _syncStatus = "Optimizing offline files...");
         await AssetManager.cacheAllActiveAssetsParallel();
+        Logger.logInfo('SYNC DEBUG: Assets cached');
         
         setState(() {
           _isSyncingVoters = true;
           _syncStatus = "Syncing voter records...";
         });
         
-        await db.waitForFirstSync();
+        Logger.logInfo('SYNC DEBUG: Waiting for first sync...');
+        
+        // Add timeout protection for waitForFirstSync
+        try {
+          await db.waitForFirstSync().timeout(
+            const Duration(seconds: 120),
+            onTimeout: () {
+              Logger.logError('waitForFirstSync timed out after 120 seconds', null);
+              throw TimeoutException('Sync took too long. Please check your connection.');
+            },
+          );
+          Logger.logInfo('SYNC DEBUG: First sync completed!');
+        } catch (e) {
+          Logger.logError('SYNC DEBUG: waitForFirstSync failed', null, e.toString());
+          rethrow;
+        }
+        
+        // Check what actually synced
+        await _logDatabaseCounts();
         
         // Download splash for next launch (after campaign_assets synced)
         if (_splashPath == null) {
@@ -69,17 +122,23 @@ class _SyncScreenState extends State<SyncScreen> {
         
       } else {
         // INCREMENTAL SYNC FLOW - Fast path for returning users
+        Logger.logInfo('SYNC DEBUG: Starting INCREMENTAL sync flow');
         setState(() => _syncStatus = "Checking for updates...");
         
         // Connect and let background sync run
         await db.connect(connector: MyPowerSyncBackendConnector());
+        Logger.logInfo('SYNC DEBUG: Connected for incremental sync');
         
         // Download only new/changed assets
         await AssetManager.updateCachedAssets();
+        Logger.logInfo('SYNC DEBUG: Updated cached assets');
         
         // Don't wait - background sync handles incremental updates
         await Future.delayed(const Duration(milliseconds: 500));
+        Logger.logInfo('SYNC DEBUG: Incremental sync flow complete');
       }
+      
+      Logger.logInfo('SYNC DEBUG: Sync setup complete, navigating to HomeScreen');
       
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -87,8 +146,13 @@ class _SyncScreenState extends State<SyncScreen> {
         );
       }
     } catch (e, st) {
-      Logger.logError('Sync sequence failed', st);
-      if (mounted) setState(() => _error = "Sync failed. Check connection.");
+      Logger.logError('Sync sequence failed', st, 'SYNC ERROR: ${e.toString()}');
+      if (mounted) {
+        final errorMsg = e is TimeoutException 
+            ? "Sync timed out. Check your connection and try again."
+            : "Sync failed: ${e.toString()}";
+        setState(() => _error = errorMsg);
+      }
     }
   }
 
@@ -105,10 +169,69 @@ class _SyncScreenState extends State<SyncScreen> {
     }
   }
 
+  /// Debug helper to check database record counts
+  Future<void> _logDatabaseCounts() async {
+    try {
+      final db = PowerSyncService().db;
+      
+      // Check voters count
+      final votersResult = await db.execute('SELECT COUNT(*) as count FROM voters');
+      final votersCount = votersResult.isNotEmpty ? votersResult.first['count'] : 0;
+      
+      // Check other tables
+      final surveysResult = await db.execute('SELECT COUNT(*) as count FROM surveys');
+      final surveysCount = surveysResult.isNotEmpty ? surveysResult.first['count'] : 0;
+      
+      final assetsResult = await db.execute('SELECT COUNT(*) as count FROM campaign_assets');
+      final assetsCount = assetsResult.isNotEmpty ? assetsResult.first['count'] : 0;
+      
+      Logger.logInfo('SYNC DEBUG: Database counts - Voters: $votersCount, Surveys: $surveysCount, Assets: $assetsCount');
+      
+      if (votersCount > 0) {
+        // Sample first voter to check data quality
+        final sampleVoter = await db.execute('SELECT id, name, epic_id FROM voters LIMIT 1');
+        Logger.logInfo('SYNC DEBUG: Sample voter: ${sampleVoter.first}');
+      }
+    } catch (e) {
+      Logger.logError('Failed to check database counts', null, e.toString());
+    }
+  }
+
   void _onSyncStatusChange(dynamic status) {
     if (!mounted) return;
     if (status.downloading == true && _isSyncingVoters) {
-      setState(() => _syncStatus = "Ingesting records into local storage...");
+      _updateRecordCountAndStatus();
+    }
+  }
+  
+  /// Update the current record count in the database and status message
+  Future<void> _updateRecordCountAndStatus() async {
+    try {
+      final db = PowerSyncService().db;
+      final result = await db.execute('SELECT COUNT(*) as count FROM voters');
+      final count = result.isNotEmpty ? (result.first['count'] as int?) ?? 0 : 0;
+      if (mounted && count != _recordCount) {
+        setState(() {
+          _recordCount = count;
+          _syncStatus = "Building your offline voter database... $_recordCount records downloaded";
+        });
+      }
+    } catch (e) {
+      // Ignore errors during count updates
+    }
+  }
+
+  /// Update the current record count in the database
+  Future<void> _updateRecordCount() async {
+    try {
+      final db = PowerSyncService().db;
+      final result = await db.execute('SELECT COUNT(*) as count FROM voters');
+      final count = result.isNotEmpty ? (result.first['count'] as int?) ?? 0 : 0;
+      if (mounted && count != _recordCount) {
+        setState(() => _recordCount = count);
+      }
+    } catch (e) {
+      // Ignore errors during count updates
     }
   }
 
@@ -144,6 +267,11 @@ class _SyncScreenState extends State<SyncScreen> {
         Text(_syncStatus, 
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        if (_isSyncingVoters && _recordCount > 0) ...[
+          const SizedBox(height: 8),
+          Text('$_recordCount records synced',
+              style: const TextStyle(color: Colors.white70, fontSize: 14)),
+        ],
         const SizedBox(height: 12),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 40),
@@ -163,9 +291,27 @@ class _SyncScreenState extends State<SyncScreen> {
       children: [
         const Icon(Icons.cloud_off, color: Colors.redAccent, size: 60),
         const SizedBox(height: 16),
-        Text(_error!, style: const TextStyle(color: Colors.white)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: Text(_error!, 
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white)),
+        ),
         const SizedBox(height: 24),
         ElevatedButton(onPressed: _startSetup, child: const Text("Retry Sync")),
+        const SizedBox(height: 12),
+        TextButton(
+          onPressed: () async {
+            await _logDatabaseCounts();
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Check console logs for debug info')),
+              );
+            }
+          },
+          child: const Text("Check Database Status", 
+            style: TextStyle(color: Colors.white70)),
+        ),
       ],
     );
   }

@@ -32,7 +32,19 @@ class AuthService {
         ).timeout(const Duration(seconds: 15));
 
         if (response.statusCode != 200) {
-          throw Exception('Activation failed: Invalid credentials');
+          String errorMessage = 'Activation failed: Invalid credentials';
+          try {
+            final errorData = jsonDecode(response.body);
+            if (errorData['error'] != null) {
+              errorMessage = 'Activation failed: ${errorData['error']}';
+              if (errorData['rpcError']?['message'] != null) {
+                errorMessage = 'Activation failed: ${errorData['rpcError']['message']}';
+              }
+            }
+          } catch (_) {
+            // Use default message if parsing fails
+          }
+          throw Exception(errorMessage);
         }
 
         final data = jsonDecode(response.body);

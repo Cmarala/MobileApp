@@ -458,7 +458,7 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
             _buildInfoRow(
               icon: Icons.list_alt_outlined,
               label: '${l10n.part}/${l10n.srno}',
-              value: '${voter.partNo ?? 'N/A'}/${voter.serialNumber ?? 'N/A'}',
+              value: '${voter.boothNumber ?? 'N/A'}/${voter.serialNumber ?? 'N/A'}',
               isBold: true,
             ),
             const SizedBox(height: 4),

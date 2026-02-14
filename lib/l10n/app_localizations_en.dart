@@ -269,7 +269,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get boothName => 'Booth Name';
 
   @override
-  String get partSerial => 'Part/Serial';
+  String get partSerial => 'Booth/Serial';
 
   @override
   String get houseNo => 'House No';
@@ -308,7 +308,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get boothVoters => 'Booth Voters';
 
   @override
-  String get part => 'Part';
+  String get part => 'Booth';
 
   @override
   String get srno => 'Sr.No';
