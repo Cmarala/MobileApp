@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mobileapp/data/repositories.dart';
 import 'package:mobileapp/utils/asset_manager.dart';
@@ -12,16 +13,17 @@ import 'package:mobileapp/features/dashboard/screens/dashboard_screen.dart';
 import 'package:mobileapp/sync/powersync_service.dart';
 import 'package:mobileapp/widgets/app_bottom_nav.dart';
 import 'package:mobileapp/features/settings/screens/settings_screen.dart';
+import 'package:mobileapp/features/settings/providers/settings_providers.dart';
 import 'package:mobileapp/l10n/app_localizations.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<Map<String, dynamic>> _localizedFeatures(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     
@@ -50,13 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final langCode = ref.watch(settingsProvider).langCode;
     final features = _localizedFeatures(context);
     return Scaffold(
       appBar: AppBar(
         title: FutureBuilder<Map<String, dynamic>?>(
           future: AppRepository.getActiveCampaign(),
           builder: (context, snapshot) {
-            final name = snapshot.data?['name'] ?? 'Campaign Console';
+            final campaign = snapshot.data;
+            // Use name_local for Telugu, name for English
+            final name = langCode == 'te'
+                ? (campaign?['name_local'] ?? campaign?['name'] ?? 'Campaign Console')
+                : (campaign?['name'] ?? 'Campaign Console');
             return Text(name, style: const TextStyle(fontWeight: FontWeight.bold));
           },
         ),
@@ -71,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: FutureBuilder<String?>(
               // Logic is now purely "Get me the file path"
               // TODO: Change back to 'home_screen_image' once it's added to campaign_assets table
-              future: AssetManager.getAssetPath('splash_screen_image'),
+              future: AssetManager.getAssetPath('home_screen_image'),
               builder: (context, snapshot) {
                 Logger.logInfo('🖼️  [HOME SCREEN] Image FutureBuilder state: ${snapshot.connectionState}');
                 if (snapshot.hasData) {
@@ -132,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       child: Image.file(
         file,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         // If file is corrupted, show placeholder
         errorBuilder: (context, error, stackTrace) {
           Logger.logError(error, stackTrace, 'Image display error');

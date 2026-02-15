@@ -27,7 +27,11 @@ mixin _$SettingsState {
       throw _privateConstructorUsedError; // Show/hide section1 text
   bool get headerImageEnabled =>
       throw _privateConstructorUsedError; // Show/hide message_section_1_image
-  bool get footerEnabled => throw _privateConstructorUsedError;
+  bool get footerEnabled =>
+      throw _privateConstructorUsedError; // Show/hide section3 text
+  String? get connectedPrinterAddress =>
+      throw _privateConstructorUsedError; // MAC address of connected printer
+  String? get connectedPrinterName => throw _privateConstructorUsedError;
 
   /// Serializes this SettingsState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,6 +55,8 @@ abstract class $SettingsStateCopyWith<$Res> {
     bool headerTextEnabled,
     bool headerImageEnabled,
     bool footerEnabled,
+    String? connectedPrinterAddress,
+    String? connectedPrinterName,
   });
 }
 
@@ -73,6 +79,8 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? headerTextEnabled = null,
     Object? headerImageEnabled = null,
     Object? footerEnabled = null,
+    Object? connectedPrinterAddress = freezed,
+    Object? connectedPrinterName = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -92,6 +100,14 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
                 ? _value.footerEnabled
                 : footerEnabled // ignore: cast_nullable_to_non_nullable
                       as bool,
+            connectedPrinterAddress: freezed == connectedPrinterAddress
+                ? _value.connectedPrinterAddress
+                : connectedPrinterAddress // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            connectedPrinterName: freezed == connectedPrinterName
+                ? _value.connectedPrinterName
+                : connectedPrinterName // ignore: cast_nullable_to_non_nullable
+                      as String?,
           )
           as $Val,
     );
@@ -112,6 +128,8 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
     bool headerTextEnabled,
     bool headerImageEnabled,
     bool footerEnabled,
+    String? connectedPrinterAddress,
+    String? connectedPrinterName,
   });
 }
 
@@ -133,6 +151,8 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? headerTextEnabled = null,
     Object? headerImageEnabled = null,
     Object? footerEnabled = null,
+    Object? connectedPrinterAddress = freezed,
+    Object? connectedPrinterName = freezed,
   }) {
     return _then(
       _$SettingsStateImpl(
@@ -152,6 +172,14 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
             ? _value.footerEnabled
             : footerEnabled // ignore: cast_nullable_to_non_nullable
                   as bool,
+        connectedPrinterAddress: freezed == connectedPrinterAddress
+            ? _value.connectedPrinterAddress
+            : connectedPrinterAddress // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        connectedPrinterName: freezed == connectedPrinterName
+            ? _value.connectedPrinterName
+            : connectedPrinterName // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -165,6 +193,8 @@ class _$SettingsStateImpl implements _SettingsState {
     this.headerTextEnabled = true,
     this.headerImageEnabled = true,
     this.footerEnabled = true,
+    this.connectedPrinterAddress,
+    this.connectedPrinterName,
   });
 
   factory _$SettingsStateImpl.fromJson(Map<String, dynamic> json) =>
@@ -185,10 +215,16 @@ class _$SettingsStateImpl implements _SettingsState {
   @override
   @JsonKey()
   final bool footerEnabled;
+  // Show/hide section3 text
+  @override
+  final String? connectedPrinterAddress;
+  // MAC address of connected printer
+  @override
+  final String? connectedPrinterName;
 
   @override
   String toString() {
-    return 'SettingsState(langCode: $langCode, headerTextEnabled: $headerTextEnabled, headerImageEnabled: $headerImageEnabled, footerEnabled: $footerEnabled)';
+    return 'SettingsState(langCode: $langCode, headerTextEnabled: $headerTextEnabled, headerImageEnabled: $headerImageEnabled, footerEnabled: $footerEnabled, connectedPrinterAddress: $connectedPrinterAddress, connectedPrinterName: $connectedPrinterName)';
   }
 
   @override
@@ -203,7 +239,14 @@ class _$SettingsStateImpl implements _SettingsState {
             (identical(other.headerImageEnabled, headerImageEnabled) ||
                 other.headerImageEnabled == headerImageEnabled) &&
             (identical(other.footerEnabled, footerEnabled) ||
-                other.footerEnabled == footerEnabled));
+                other.footerEnabled == footerEnabled) &&
+            (identical(
+                  other.connectedPrinterAddress,
+                  connectedPrinterAddress,
+                ) ||
+                other.connectedPrinterAddress == connectedPrinterAddress) &&
+            (identical(other.connectedPrinterName, connectedPrinterName) ||
+                other.connectedPrinterName == connectedPrinterName));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -214,6 +257,8 @@ class _$SettingsStateImpl implements _SettingsState {
     headerTextEnabled,
     headerImageEnabled,
     footerEnabled,
+    connectedPrinterAddress,
+    connectedPrinterName,
   );
 
   /// Create a copy of SettingsState
@@ -236,6 +281,8 @@ abstract class _SettingsState implements SettingsState {
     final bool headerTextEnabled,
     final bool headerImageEnabled,
     final bool footerEnabled,
+    final String? connectedPrinterAddress,
+    final String? connectedPrinterName,
   }) = _$SettingsStateImpl;
 
   factory _SettingsState.fromJson(Map<String, dynamic> json) =
@@ -248,7 +295,11 @@ abstract class _SettingsState implements SettingsState {
   @override
   bool get headerImageEnabled; // Show/hide message_section_1_image
   @override
-  bool get footerEnabled;
+  bool get footerEnabled; // Show/hide section3 text
+  @override
+  String? get connectedPrinterAddress; // MAC address of connected printer
+  @override
+  String? get connectedPrinterName;
 
   /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.

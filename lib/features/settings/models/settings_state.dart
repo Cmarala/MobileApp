@@ -10,6 +10,8 @@ class SettingsState with _$SettingsState {
     @Default(true) bool headerTextEnabled, // Show/hide section1 text
     @Default(true) bool headerImageEnabled, // Show/hide message_section_1_image
     @Default(true) bool footerEnabled, // Show/hide section3 text
+    String? connectedPrinterAddress, // MAC address of connected printer
+    String? connectedPrinterName, // Display name of connected printer
   }) = _SettingsState;
 
   factory SettingsState.fromJson(Map<String, dynamic> json) => _$SettingsStateFromJson(json);

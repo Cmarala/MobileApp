@@ -124,19 +124,60 @@ class _VoterDetailScreenState extends ConsumerState<VoterDetailScreen> {
   Future<void> _printVoterSlip() async {
     try {
       final langCode = ref.read(settingsProvider).langCode;
-      final slip = await _controller.getPrintableSlip(langCode);
-      debugPrint('THERMAL PRINT OUTPUT:');
-      debugPrint(slip);
+      final l10n = AppLocalizations.of(context);
+
+      if (l10n == null) return;
+
+      // Check if printer is already connected
+      final isPrinterConnected = ref.read(printerConnectedProvider);
+
+      if (!isPrinterConnected) {
+        // Show dialog asking user to connect printer from settings
+        if (!mounted) return;
+
+        final shouldGoToSettings = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Printer Not Connected'),
+              content: const Text('Please connect a printer from Settings first before printing.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Open Settings'),
+                ),
+              ],
+            );
+          },
+        );
+
+        if (shouldGoToSettings == true && mounted) {
+          // Navigate to settings screen
+          Navigator.of(context).pushNamed('/settings');
+        }
+        return;
+      }
+
+      // Printer is connected, proceed with printing
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Printing...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      await _controller.printVoterSlip(langCode);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Voter slip ready (check console)'),
-            duration: const Duration(seconds: 2),
-            action: SnackBarAction(
-              label: 'OK',
-              onPressed: () {},
-            ),
+          const SnackBar(
+            content: Text('Voter slip printed successfully'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
           ),
         );
       }

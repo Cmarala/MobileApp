@@ -33,3 +33,15 @@ final headerImageEnabledProvider = Provider<bool>((ref) {
 final footerEnabledProvider = Provider<bool>((ref) {
   return ref.watch(settingsProvider).footerEnabled;
 });
+
+// Helper provider for printer connection status
+final printerConnectedProvider = Provider<bool>((ref) {
+  final settings = ref.watch(settingsProvider);
+  return settings.connectedPrinterAddress != null && 
+         settings.connectedPrinterAddress!.isNotEmpty;
+});
+
+// Helper provider for connected printer name
+final connectedPrinterNameProvider = Provider<String?>((ref) {
+  return ref.watch(settingsProvider).connectedPrinterName;
+});

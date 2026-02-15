@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobileapp/l10n/app_localizations.dart';
+import 'package:mobileapp/utils/printer_service.dart';
 import '../providers/settings_providers.dart';
 import '../models/settings_state.dart';
 
@@ -25,6 +26,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildHeaderImageToggle(context, ref, settings, l10n),
           const Divider(),
           _buildFooterToggle(context, ref, settings, l10n),
+          const Divider(),
+          _buildPrinterSection(context, ref, settings, l10n),
         ],
       ),
     );
@@ -177,5 +180,169 @@ class SettingsScreen extends ConsumerWidget {
         }
       },
     );
+  }
+
+  Widget _buildPrinterSection(
+    BuildContext context,
+    WidgetRef ref,
+    SettingsState settings,
+    AppLocalizations? l10n,
+  ) {
+    final isPrinterConnected = settings.connectedPrinterAddress != null && 
+                               settings.connectedPrinterAddress!.isNotEmpty;
+
+    return Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.print),
+          title: const Text('Thermal Printer'),
+          subtitle: isPrinterConnected
+              ? Text('Connected: ${settings.connectedPrinterName}')
+              : const Text('Not Connected'),
+        ),
+        if (isPrinterConnected)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                try {
+                  await ref.read(settingsProvider.notifier).disconnectPrinter();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Printer disconnected'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              },
+              child: const Text('Disconnect'),
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ElevatedButton(
+              onPressed: () => _showPrinterSelectionDialog(context, ref, l10n),
+              child: const Text('Connect Printer'),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _showPrinterSelectionDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations? l10n,
+  ) async {
+    try {
+      // Get available printers
+      final devices = await ref.read(settingsProvider.notifier).getAvailablePrinterDevices();
+
+      if (!context.mounted) return;
+
+      if (devices.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No Bluetooth printers found'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      // Show printer selection dialog
+      final selectedDevice = await showDialog<PrinterDevice>(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('Select Printer'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                itemCount: devices.length,
+                itemBuilder: (context, index) {
+                  final device = devices[index];
+                  return ListTile(
+                    title: Text(device.name),
+                    subtitle: Text(device.address),
+                    onTap: () {
+                      Navigator.of(dialogContext).pop(device);
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(l10n?.cancel ?? 'Cancel'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (selectedDevice == null) return;
+
+      // Show connecting message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Connecting to printer...'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      // Connect to selected printer
+      final connected = await ref.read(settingsProvider.notifier).connectToPrinter(
+        selectedDevice,
+        selectedDevice.name,
+      );
+
+      if (!context.mounted) return;
+
+      if (connected) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Printer connected successfully'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to connect to printer'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n?.error ?? 'Error'}: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
